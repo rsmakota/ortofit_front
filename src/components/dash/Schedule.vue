@@ -174,4 +174,11 @@
 
 <style>
   @import '~fullcalendar/dist/fullcalendar.css';
+  /*.fc-day*/
+  /*{*/
+    /*background-color: #ECF0F9;*/
+    /*!*color: #ffffff;*!*/
+  /*}*/
+
+
 </style>
