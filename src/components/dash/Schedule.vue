@@ -22,8 +22,6 @@
 </template>
 
 <script>
-  //  import moment from 'moment'
-//  import store from './../../store'
   import appProperty from './../../property'
   import { bus } from './../event/bus'
 
@@ -38,6 +36,7 @@
           //          eventClick: (event) => {
           //            this.selected = event
           //          },
+          dayClick: this.dayClick,
           header: {
             left: 'prev,next today',
             center: 'title',
@@ -74,12 +73,12 @@
         selected: {}
       }
     },
-    watch: {
-      currentOfficeId: function (newOfficeId) {
-        console.log('New Office: ', this.currentOfficeId)
-      }
-    },
     methods: {
+      dayClick (date) {
+        let params = {title: 'Запись на прием', state: 'new', time: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId()}
+        this.$modal.show('appointment-modal', params)
+//        console.log('DAYCLICK', date)
+      },
       getOfficeId () {
         if (this.currentOfficeId != null) {
           return this.currentOfficeId
@@ -115,8 +114,9 @@
       },
       getEventsSource () {
         let data = {access_token: this.$store.state.auth.token, officeId: this.getOfficeId()}
+        console.log(data)
         let doctorId = this.getDoctorId()
-        if (doctorId != null) {
+        if (doctorId !== null) {
           data.doctorId = doctorId
         }
         return {url: appProperty.scheduleApiUrl, data: data}
@@ -141,13 +141,7 @@
 //        console.log(test)
       },
       loadOffices () {
-        this.$http.get('office/all')
-          .then(response => {
-            this.offices = response.body
-          })
-      },
-      test () {
-        alert('tets')
+        this.offices = this.$store.state.office.offices
       }
     },
     computed: {
@@ -165,20 +159,13 @@
       }
     },
     mounted () {
-      this.loadOffices()
       this.currentOfficeId = this.getOfficeId()
       bus.$on('menu-click-doctor-event', this.setDoctorId)
+      bus.$on('office-store-loaded', this.loadOffices)
     }
   }
 </script>
 
 <style>
   @import '~fullcalendar/dist/fullcalendar.css';
-  /*.fc-day*/
-  /*{*/
-    /*background-color: #ECF0F9;*/
-    /*!*color: #ffffff;*!*/
-  /*}*/
-
-
 </style>

@@ -9,13 +9,14 @@ import store from './store'
 import calendar from 'vue-full-calendar'
 import VueStrap from 'vue-strap'
 import AppProps from './property'
+import VModal from 'vue-js-modal'
 
 window.jQuery = window.$ = require('jquery')
 // console.log(this.$refs)
 Vue.router = router
 Vue.use(VueResource)
 Vue.use(VueStrap)
-
+Vue.use(VModal)
 // Vue.use(AppProps)
 Vue.use(calendar)
 Vue.http.options.root = AppProps.apiUrl

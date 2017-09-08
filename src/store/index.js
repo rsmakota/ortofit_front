@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
+import doctor from './modules/doctor'
+import office from './modules/office'
 
 Vue.use(Vuex)
 
@@ -22,6 +24,17 @@ const store = new Vuex.Store({
     },
     setDoctorId (state, doctorId) {
       state.doctorId = doctorId
+    }
+  },
+  modules: {
+    doctor,
+    office
+  },
+  actions: {
+    loadData ({ state, getters, commit, dispatch }) {
+      dispatch('doctor/loadDoctors', state.empty)
+      dispatch('office/loadOffices', state.empty)
+      console.log(state)
     }
   },
   plugins: [createPersistedState({paths: ['auth', 'officeId']})]

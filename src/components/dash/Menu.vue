@@ -11,7 +11,7 @@
         </a>
 
         <ul class="treeview-menu" id="doctorList" >
-          <li v-for="(doctor, index) in doctors" v-bind:class="{'active': (activeDoctorId == doctor.id)}">
+          <li v-for="(doctor, index) in doctors" v-bind:class="{'active': (activeDoctorId == doctor.id)}" v-bind="doctors">
             <a href="javascript:void(0);" v-on:click="clickDoctor(doctor.id)"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></a>
           </li>
           <li v-bind:class="{'active': (activeDoctorId == null)}">
@@ -65,8 +65,6 @@
         } else {
           this.$router.push({name: 'Schedule', append: true, params: {doctorId: doctorId}})
         }
-        console.log('Current route', doctorId)
-//        console.log(this.$parent.$refs)
       },
       openCloseMenu: function (menuId) {
         if (this.activeMenu === menuId) {
@@ -75,18 +73,13 @@
           this.activeMenu = menuId
         }
       },
-
-      loadDoctors: function () {
-        this.$http.get('doctor/')
-          .then(response => {
-            this.doctors = response.body
-          })
+      initDoctors: function () {
+        this.doctors = this.$store.state.doctor.doctors
       }
     },
     mounted () {
-      this.loadDoctors()
+      bus.$on('doctor-store-loaded', this.initDoctors)
     }
-
   }
 </script>
 

@@ -67,7 +67,9 @@
     <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
       <div class="user-panel">
-        <button class="btn btn-block btn-success" id="appButton"><i class="fa fa-fw fa-calendar-plus-o"></i> <span>Запись</span></button>
+        <button class="btn btn-block btn-success" id="appButton" v-on:click="appointmentModalShow">
+          <i class="fa fa-fw fa-calendar-plus-o"></i> <span>Запись</span>
+        </button>
       </div>
       <!-- sidebar: style can be found in sidebar.less -->
       <main-menu></main-menu>
@@ -92,9 +94,10 @@
     </div>
     <!-- /.content-wrapper -->
 
+    <appointment-modal></appointment-modal>
     <!-- Main Footer -->
     <footer class="main-footer">
-      <strong>Copyright &copy; <a href="javascript:;">CoPilot</a>.</strong> All rights reserved.
+      <strong>Copyright &copy; <a href="javascript:;">Ortofit</a>.</strong> All rights reserved.
     </footer>
 
 
@@ -103,6 +106,7 @@
 
 <script>
   import MainMenu from './dash/Menu.vue'
+  import AppointmentModal from './dash/appointment/Modal'
 
   export default {
     name: 'Dash',
@@ -111,8 +115,17 @@
         msg: 'Welcome to Your Vue.js App'
       }
     },
+    methods: {
+      appointmentModalShow: function () {
+        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: 'new', time: Date.now()})
+      }
+    },
     components: {
-      'main-menu': MainMenu
+      'main-menu': MainMenu,
+      'appointment-modal': AppointmentModal
+    },
+    mounted () {
+      this.$store.dispatch('loadData')
     }
   }
 </script>
