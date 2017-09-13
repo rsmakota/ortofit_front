@@ -94,19 +94,20 @@
     </div>
     <!-- /.content-wrapper -->
 
-    <appointment-modal></appointment-modal>
+
     <!-- Main Footer -->
     <footer class="main-footer">
       <strong>Copyright &copy; <a href="javascript:;">Ortofit</a>.</strong> All rights reserved.
     </footer>
 
-
+    <appointment-modal></appointment-modal>
   </div>
 </template>
 
 <script>
   import MainMenu from './dash/Menu.vue'
   import AppointmentModal from './dash/appointment/Modal'
+  import moment from 'moment'
 
   export default {
     name: 'Dash',
@@ -117,7 +118,7 @@
     },
     methods: {
       appointmentModalShow: function () {
-        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: 'new', time: Date.now()})
+        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: 'new', time: moment()})
       }
     },
     components: {

@@ -5,7 +5,7 @@
     <ul class="list-group" style="text-align: center" v-if="hasPredefinedParams()">
       <li class="list-group-item list-group-item-info">
 
-        <span v-if="doctor"><i class="fa fa-user-md icon20" > </i> '{{ doctor }}' &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-if="doctorId"><i class="fa fa-user-md icon20" > </i> '{{ getDoctorName(doctorId) }}' &nbsp;&nbsp;&nbsp;&nbsp;</span>
         <span v-if="officeId"><i class="fa fa-building icon20" ></i> {{ getOfficeName(officeId) }} &nbsp;&nbsp;&nbsp;&nbsp;</span>
 
         <span v-if="date"><i class="fa fa-calendar icon20" ></i> {{date}} &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -64,8 +64,9 @@
             <div class="input-group-addon">
               <i class="fa fa-star icon20"></i>
             </div>
-            <select class="form-control" id="serviceId" v-model="service" title="service">
-              <option v-for="s in services" v-bind:value="service">{{ s.name }}</option>
+            <select class="form-control" id="serviceId" v-model="serviceId" title="service">
+              <option value="0" disabled>Выберите услугу</option>
+              <option v-for="s in services" v-bind:value="s.id">{{ s.name }}</option>
             </select>
           </div>
 
@@ -81,6 +82,7 @@
               <i class="fa fa-building icon20"></i>
             </div>
             <select class="form-control" id="officeId" v-model="officeId" title="office">
+              <option value="0" disabled>Выберите офис</option>
               <option v-for="o in offices" v-bind:value="o.id">{{ o.name }}</option>
             </select>
           </div>
@@ -110,7 +112,8 @@
             <div class="input-group-addon">
               <i class="fa fa-calendar icon20"></i>
             </div>
-            <input id="date" v-model="date" class="form-control pull-right active" type="text" />
+            <!--<input id="date" name="date" class="form-control pull-right active" type="text" />-->
+            <date-picker v-model="date" :config="dtConf"></date-picker>
           </div>
         </div>
       </div>
@@ -138,8 +141,9 @@
             <div class="input-group-addon">
               <i class="fa fa-user-md icon20"></i>
             </div>
-            <select class="form-control" id="doctorId" v-model="doctor" title="doctor" >
-              <option v-for="d in doctors" v-bind:value="doctor">{{ d.name }}</option>
+            <select class="form-control" id="doctorId" v-model="doctorId" title="doctor" >
+              <option value="0" disabled>Выберите сотрудника</option>
+              <option v-for="d in doctors" v-bind:value="d.id">{{ d.name }}</option>
             </select>
           </div>
         </div>
@@ -190,29 +194,38 @@
 
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" v-on:click="">Закрыть</button>
-    <button type="button" class="btn btn-primary" id="saveButton">Сохранить</button>
+    <button type="button" class="btn btn-default" v-on:click="closeModal">Закрыть</button>
+    <button type="button" class="btn btn-primary" id="saveButton" v-on:click="save">Сохранить</button>
   </div>
   </div>
 </template>
 
 <script>
+  import moment from 'moment'
+  // Import required dependencies
+  import 'bootstrap/dist/css/bootstrap.css'
+
+  // Import this component
+  import datePicker from 'vue-bootstrap-datetimepicker'
+
+  // Import date picker css
+  import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
   export default {
     props: ['params'],
     data () {
       return {
-        doctor: null,
-        officeId: null,
-        service: null,
-        doctors: [],
+        doctorId: 0,
+        officeId: 0,
+        serviceId: 0,
+        doctors: this.$store.getters['doctor/getAll'],
         offices: this.$store.getters['office/getAll'],
-        services: [],
+        services: this.$store.getters['service/getAll'],
         date: null,
         time: null,
         prefix: 38,
         msisdn: null,
         clientName: null,
-        gender: null,
+        gender: 'female',
         duration: 15,
         forwarder: null,
         flyer: null,
@@ -220,7 +233,8 @@
         description: null,
         appId: null,
         clientId: null,
-        directionId: null
+        directionId: null,
+        dtConf: {format: 'YYYY-MM-DD', locale: 'ru'}
       }
     },
     methods: {
@@ -233,10 +247,22 @@
       getOfficeNameById: function (id) {
         let office = this.$store.getters['office/getOfficeById'](id)
         return ('name' in office) ? office.name : ''
+      },
+      closeModal: function () {
+        this.$emit('close-modal', true)
+      },
+      save: function () {
+        // h
       }
     },
     mounted () {
+      console.log('PARAMS TIME', this.params.time)
       this.officeId = ('officeId' in this.params) ? this.params.officeId : null
+      this.date = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
+      this.time = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
+    },
+    components: {
+      datePicker
     }
   }
 </script>

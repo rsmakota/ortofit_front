@@ -3,7 +3,7 @@ import mutations from './mutations'
 import actions from './actions'
 import getters from './getters'
 
-const doctor = {
+const service = {
   state: state,
   namespaced: true,
   actions: actions,
@@ -11,4 +11,4 @@ const doctor = {
   getters: getters
 }
 
-export default doctor
+export default service
