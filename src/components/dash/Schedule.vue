@@ -75,7 +75,7 @@
     },
     methods: {
       dayClick (date) {
-        let params = {title: 'Запись на прием', state: 'new', time: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId()}
+        let params = {title: 'Запись на прием', fromCalendar: true, state: 'new', time: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId()}
         this.$modal.show('appointment-modal', params)
 //        console.log('DAYCLICK', date)
       },

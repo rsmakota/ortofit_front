@@ -27,8 +27,6 @@
         this.title = event.params.title
         this.params = event.params
         this.state = event.params.state
-//        console.log(New.methods.setDoctorId(12))
-//        New.$set('params', this.params)
       },
       close () {
         this.$modal.hide('appointment-modal')
@@ -39,7 +37,6 @@
     },
     mounted () {
       this.$on('close-modal', this.close)
-//      console.log('REFS', this.$refs.modal)
     }
   }
 </script>

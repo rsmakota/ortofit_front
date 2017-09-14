@@ -2,14 +2,14 @@
   <div>
   <div class="modal-body">
 
-    <ul class="list-group" style="text-align: center" v-if="hasPredefinedParams()">
+    <ul class="list-group" style="text-align: center" v-if="fromCalendar">
       <li class="list-group-item list-group-item-info">
 
-        <span v-if="doctorId"><i class="fa fa-user-md icon20" > </i> '{{ getDoctorName(doctorId) }}' &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-if="doctorId"><i class="fa fa-user-md icon20" > </i> {{ getDoctorName(doctorId) }} &nbsp;&nbsp;&nbsp;&nbsp;</span>
         <span v-if="officeId"><i class="fa fa-building icon20" ></i> {{ getOfficeName(officeId) }} &nbsp;&nbsp;&nbsp;&nbsp;</span>
 
-        <span v-if="date"><i class="fa fa-calendar icon20" ></i> {{date}} &nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <span v-if="time"><i class="fa fa-clock-o icon20" > </i> {{time}}</span>
+        <span v-if="date"><i class="fa fa-calendar icon20" ></i> {{date.format('DD/MM/YYYY')}} &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-if="time"><i class="fa fa-clock-o icon20" > </i> {{time.format('HH:mm')}}</span>
       </li>
     </ul>
 
@@ -20,7 +20,8 @@
         <div class="col-sm-9">
           <div class="input-group">
             <div class="input-group-addon"><strong class="icon20">+{{ prefix }}</strong></div>
-            <input type="text" class="form-control" v-model="msisdn" placeholder="067-359-42-88" id="msisdn" />
+            <!--<input type="text" class="form-control" v-model="msisdn" placeholder="067-359-42-88" id="msisdn" />-->
+            <masked-input v-model="msisdn" mask="111-111-11-11" placeholder="Номер телефона" type="tel" class="form-control" />
           </div>
         </div>
       </div>
@@ -74,7 +75,7 @@
       </div>
 
 
-      <div class="form-group" v-if="officeId == null">
+      <div class="form-group" v-if="!fromCalendar">
         <label for="officeId" class="col-sm-3 control-label">Офис:</label>
         <div class="col-sm-9">
           <div class="input-group">
@@ -88,7 +89,7 @@
           </div>
         </div>
       </div>
-      <input type="hidden" v-else="officeId != null" v-model="officeId" />
+
       <div class="form-group">
         <label for="duration" class="col-sm-3 control-label">Прием:</label>
 
@@ -104,7 +105,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" v-if="!fromCalendar">
         <label for="date" class="col-sm-3 control-label">Дата:</label>
 
         <div class="col-sm-9">
@@ -119,7 +120,7 @@
       </div>
 
 
-      <div class="form-group">
+      <div class="form-group" v-if="!fromCalendar">
         <label for="time" class="col-sm-3 control-label">Время:</label>
 
         <div class="col-sm-9">
@@ -127,13 +128,14 @@
             <div class="input-group-addon">
               <i class="fa fa-clock-o icon20"></i>
             </div>
-            <input id="time" class="form-control pull-right active" type="text" v-model="time" />
+            <!--<input id="time" class="form-control pull-right active" type="text" v-model="time" />-->
+            <date-picker v-model="time" :config="tConf"></date-picker>
           </div>
         </div>
       </div>
 
 
-      <div class="form-group">
+      <div class="form-group" v-if="!fromCalendar || (fromCalendar && (params.doctorId == null))">
         <label for="doctorId" class="col-sm-3 control-label">Сотрудник:</label>
 
         <div class="col-sm-9">
@@ -207,13 +209,14 @@
 
   // Import this component
   import datePicker from 'vue-bootstrap-datetimepicker'
-
+  import maskedInput from 'vue-masked-input'
   // Import date picker css
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
   export default {
     props: ['params'],
     data () {
       return {
+        fromCalendar: false,
         doctorId: 0,
         officeId: 0,
         serviceId: 0,
@@ -234,15 +237,16 @@
         appId: null,
         clientId: null,
         directionId: null,
-        dtConf: {format: 'YYYY-MM-DD', locale: 'ru'}
+        dtConf: {format: 'DD/MM/YYYY', locale: 'ru'},
+        tConf: {format: 'HH:mm', locale: 'ru'}
       }
     },
     methods: {
-      hasPredefinedParams: function () {
-        return (this.doctorId !== null) || (this.officeId !== null) || (this.date !== null) || (this.time !== null)
-      },
       getOfficeName: function (id) {
         return this.$store.getters['office/getOfficeById'](id).name
+      },
+      getDoctorName: function (id) {
+        return this.$store.getters['doctor/getDoctorById'](id).name
       },
       getOfficeNameById: function (id) {
         let office = this.$store.getters['office/getOfficeById'](id)
@@ -252,17 +256,25 @@
         this.$emit('close-modal', true)
       },
       save: function () {
-        // h
+        console.log('MSISDN', this.msisdn)
       }
     },
     mounted () {
-      console.log('PARAMS TIME', this.params.time)
-      this.officeId = ('officeId' in this.params) ? this.params.officeId : null
+      this.fromCalendar = ('fromCalendar' in this.params) ? this.params.fromCalendar : false
+      this.officeId = ('officeId' in this.params) ? this.params.officeId : 0
+      this.doctorId = (('doctorId' in this.params) && (this.params.doctorId != null)) ? this.params.doctorId : 0
       this.date = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
       this.time = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
+      console.log(this.params)
     },
     components: {
-      datePicker
+      datePicker,
+      maskedInput
     }
   }
 </script>
+<style>
+  .icon20 {
+    width:23px;
+  }
+</style>
