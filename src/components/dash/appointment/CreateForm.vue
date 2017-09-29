@@ -212,6 +212,8 @@
   import maskedInput from 'vue-masked-input'
   // Import date picker css
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
+  import AppProps from '../../../property'
+
   export default {
     props: ['params'],
     data () {
@@ -256,6 +258,20 @@
         this.$emit('close-modal', true)
       },
       save: function () {
+        this.$http.get(AppProps.apiUrl + '/client/380674271099')
+//        let data = {clientId: this.
+//        created
+//          description
+//          officeId
+//          serviceId
+//          dateTime
+//          state
+//          duration
+//          userId
+//          forwarder
+//          bold
+//          flyer
+//          phoneConfirm}
         console.log('MSISDN', this.msisdn)
       }
     },
