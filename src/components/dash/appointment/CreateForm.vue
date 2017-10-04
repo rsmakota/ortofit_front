@@ -18,10 +18,11 @@
         <label for="msisdn" class="col-sm-3 control-label">Телефон:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
-            <div class="input-group-addon"><strong class="icon20">+{{ prefix }}</strong></div>
+          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': msisdnErr}">
+            <div class="input-group-addon">
+              <strong class="icon20">+{{ prefix }}</strong></div>
             <!--<input type="text" class="form-control" v-model="msisdn" placeholder="067-359-42-88" id="msisdn" />-->
-            <masked-input v-model="msisdn" mask="111-111-11-11" placeholder="Номер телефона" type="tel" class="form-control" />
+            <masked-input :disabled="client !== null" v-model="msisdn" mask="111-111-11-11" placeholder="Номер телефона" type="tel" class="form-control" />
           </div>
         </div>
       </div>
@@ -29,11 +30,11 @@
         <label for="clientName" class="col-sm-3 control-label">Имя:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': clientNameErr}">
             <div class="input-group-addon">
               <i class="fa fa-credit-card icon20"> </i>
             </div>
-            <input type="text" class="form-control" id="clientName" placeholder="Имя Клиента" v-model="clientName"/>
+            <input type="text" class="form-control" id="clientName" placeholder="Имя Клиента" v-model="clientName" :disabled="client !== null"/>
           </div>
         </div>
       </div>
@@ -42,11 +43,12 @@
         <label for="gender" class="col-sm-3 control-label">Пол:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
-            <div class="input-group-addon">
+          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': genderErr}">
+            <div class="input-group-addon" >
               <i class="fa fa-venus-mars icon20"></i>
             </div>
-            <select class="form-control" id="gender" v-model="gender" title="gender">
+            <select class="form-control" id="gender" v-model="gender" title="gender" :disabled="client !== null">
+              <option value="null" disabled>Выберите пол</option>
               <option value="female">Женский</option>
               <option value="male">Мужской</option>
             </select>
@@ -55,13 +57,13 @@
         </div>
       </div>
 
-
+<div v-bind:class="{hidden: (client === null)}">
 
       <div class="form-group">
         <label for="serviceId" class="col-sm-3 control-label">Услуга:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-error': serviceErr}">
             <div class="input-group-addon">
               <i class="fa fa-star icon20"></i>
             </div>
@@ -78,7 +80,7 @@
       <div class="form-group" v-if="!fromCalendar">
         <label for="officeId" class="col-sm-3 control-label">Офис:</label>
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-error': officeErr}">
             <div class="input-group-addon">
               <i class="fa fa-building icon20"></i>
             </div>
@@ -109,7 +111,7 @@
         <label for="date" class="col-sm-3 control-label">Дата:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-error': dateErr}">
             <div class="input-group-addon">
               <i class="fa fa-calendar icon20"></i>
             </div>
@@ -124,7 +126,7 @@
         <label for="time" class="col-sm-3 control-label">Время:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-error': timeErr}">
             <div class="input-group-addon">
               <i class="fa fa-clock-o icon20"></i>
             </div>
@@ -139,7 +141,7 @@
         <label for="doctorId" class="col-sm-3 control-label">Сотрудник:</label>
 
         <div class="col-sm-9">
-          <div class="input-group">
+          <div class="input-group" v-bind:class="{'has-error': doctorErr}">
             <div class="input-group-addon">
               <i class="fa fa-user-md icon20"></i>
             </div>
@@ -187,7 +189,7 @@
           <textarea class="form-control" rows="3" id="description" v-model="description" title="description">{{ description }}</textarea>
         </div>
       </div>
-
+</div>
       <input type="hidden" id="appId"       v-model="appId">
       <input type="hidden" id="clientId"    v-model="clientId">
       <input type="hidden" id="directionId" v-model="directionId">
@@ -195,7 +197,10 @@
     </form>
 
   </div>
-  <div class="modal-footer">
+  <div class="modal-footer" v-bind:class="{hidden: (client !== null)}">
+    <button type="button" class="btn btn-primary" v-on:click="saveClient">Далее >></button>
+  </div>
+  <div class="modal-footer" v-bind:class="{hidden: (client === null)}">
     <button type="button" class="btn btn-default" v-on:click="closeModal">Закрыть</button>
     <button type="button" class="btn btn-primary" id="saveButton" v-on:click="save">Сохранить</button>
   </div>
@@ -213,6 +218,7 @@
   // Import date picker css
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
   import AppProps from '../../../property'
+  import { bus } from './../../event/bus'
 
   export default {
     props: ['params'],
@@ -220,17 +226,26 @@
       return {
         fromCalendar: false,
         doctorId: 0,
+        doctorErr: false,
         officeId: 0,
+        officeErr: false,
         serviceId: 0,
+        serviceErr: false,
         doctors: this.$store.getters['doctor/getAll'],
         offices: this.$store.getters['office/getAll'],
         services: this.$store.getters['service/getAll'],
         date: null,
+        dateErr: false,
         time: null,
+        timeErr: false,
         prefix: 38,
         msisdn: null,
+        msisdnErr: false,
+        number: null,
         clientName: null,
-        gender: 'female',
+        clientNameErr: null,
+        gender: null,
+        genderErr: false,
         duration: 15,
         forwarder: null,
         flyer: null,
@@ -238,9 +253,44 @@
         description: null,
         appId: null,
         clientId: null,
+        clientErr: false,
+        client: null,
         directionId: null,
         dtConf: {format: 'DD/MM/YYYY', locale: 'ru'},
         tConf: {format: 'HH:mm', locale: 'ru'}
+      }
+    },
+    watch: {
+      msisdn: function (val) {
+        this.msisdnErr = false
+        this.number = val.replace(/[^0-9]/gim, '')
+        if (this.number.length === 10) {
+//          console.log(this.offices)
+          this.$http.get(AppProps.apiUrl + '/client/' + this.prefix + this.number)
+            .then(
+            response => {
+              if (!response.body) {
+//                console.log('Empty')
+              } else {
+                this.client = response.body
+                this.clientName = this.client.name
+                this.gender = this.client.gender
+              }
+//              console.log('Client', this.client)
+            })
+        }
+      },
+      clientName: function (val) {
+        this.clientNameErr = false
+      },
+      gender: function (val) {
+        this.genderErr = false
+      },
+      serviceId: function () {
+        this.serviceErr = false
+      },
+      doctorId: function () {
+        this.doctorErr = false
       }
     },
     methods: {
@@ -254,25 +304,70 @@
         let office = this.$store.getters['office/getOfficeById'](id)
         return ('name' in office) ? office.name : ''
       },
+      getOffice: function (id) {
+        return this.$store.getters['office/getOfficeById'](id)
+      },
       closeModal: function () {
         this.$emit('close-modal', true)
       },
+      sanitizeClient: function () {
+        this.msisdnErr = (this.number.length < 10) || this.number.substring(0, 1) !== '0'
+        this.clientNameErr = (this.clientName === null || this.clientName.length < 1)
+        this.genderErr = (this.gender === null)
+        return (!this.msisdnErr && !this.clientNameErr && !this.genderErr)
+      },
+      sanitizeAppointment: function () {
+        this.officeErr = (this.officeId === 0)
+        this.doctorErr = (this.doctorId === 0)
+        this.dateErr = (this.data === null)
+        this.timeErr = (this.time === null)
+        this.serviceErr = (this.serviceId === 0)
+        return (!this.officeErr && !this.doctorErr && !this.dateErr && !this.timeErr && !this.serviceErr)
+      },
+      saveClient: function () {
+        let office = this.getOffice(this.officeId)
+        let data = {msisdn: (this.prefix + this.number), name: this.clientName, gender: this.gender, countryId: office.city.country.id}
+        if (!this.sanitizeClient()) {
+          return
+        }
+//        console.log(data)
+        this.$http.post(AppProps.apiUrl + '/client/', data)
+          .then(
+            response => {
+              if (response.ok) {
+                this.client = response.body
+              }
+            }
+          )
+      },
+      closeWindow: function () {
+        bus.$emit('appointment-modal-close')
+      },
       save: function () {
-        this.$http.get(AppProps.apiUrl + '/client/380674271099')
-//        let data = {clientId: this.
-//        created
-//          description
-//          officeId
-//          serviceId
-//          dateTime
-//          state
-//          duration
-//          userId
-//          forwarder
-//          bold
-//          flyer
-//          phoneConfirm}
-        console.log('MSISDN', this.msisdn)
+        if (!this.sanitizeAppointment()) {
+//          console.log('Unsanitize')
+          return
+        }
+        let data = {
+          clientId: this.client.id,
+          description: (this.description !== null) ? this.description : '',
+          officeId: this.officeId,
+          serviceId: this.serviceId,
+          dateTime: moment(this.date.format('YYYY-MM-DD') + ' ' + this.time.format('HH:mm:ss')),
+          duration: this.duration,
+          userId: this.doctorId,
+          forwarder: this.forwarder,
+          bold: (this.bold !== null),
+          flyer: (this.flyer !== null)
+        }
+//        console.log('Data:', data)
+        this.$http.post(AppProps.apiUrl + '/appointment/', data)
+          .then(
+            response => {
+              this.closeWindow()
+              bus.$emit('appointment-schedule-refresh')
+            }
+          )
       }
     },
     mounted () {

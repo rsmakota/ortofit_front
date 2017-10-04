@@ -162,6 +162,7 @@
       this.currentOfficeId = this.getOfficeId()
       bus.$on('menu-click-doctor-event', this.setDoctorId)
       bus.$on('office-store-loaded', this.loadOffices)
+      bus.$on('appointment-schedule-refresh', this.refreshEvents)
     }
   }
 </script>

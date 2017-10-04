@@ -13,7 +13,7 @@
 
 <script>
   import New from './CreateForm'
-
+  import { bus } from './../../event/bus'
   export default {
     data () {
       return {
@@ -36,7 +36,7 @@
       'new-form': New
     },
     mounted () {
-      this.$on('close-modal', this.close)
+      bus.$on('appointment-modal-close', this.close)
     }
   }
 </script>
