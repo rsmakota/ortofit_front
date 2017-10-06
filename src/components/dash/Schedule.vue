@@ -33,9 +33,7 @@
         currentOfficeId: this.officeId,
         currentDoctorId: this.doctorId,
         config: {
-          //          eventClick: (event) => {
-          //            this.selected = event
-          //          },
+          eventClick: this.eventClick,
           dayClick: this.dayClick,
           header: {
             left: 'prev,next today',
@@ -67,7 +65,7 @@
           events: this.getEventsSource(),
           editable: false,
           droppable: false,
-          selectable: true,
+          selectable: false,
           textEscape: false
         },
         selected: {}
@@ -77,7 +75,12 @@
       dayClick (date) {
         let params = {title: 'Запись на прием', fromCalendar: true, state: 'new', time: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId()}
         this.$modal.show('appointment-modal', params)
-//        console.log('DAYCLICK', date)
+        return false
+      },
+      eventClick (event) {
+        let params = {title: 'Запись на прием', state: 'view', appointmentId: event.id}
+        this.$modal.show('appointment-modal', params)
+        return false
       },
       getOfficeId () {
         if (this.currentOfficeId != null) {
@@ -114,7 +117,7 @@
       },
       getEventsSource () {
         let data = {access_token: this.$store.state.auth.token, officeId: this.getOfficeId()}
-        console.log(data)
+//        console.log(data)
         let doctorId = this.getDoctorId()
         if (doctorId !== null) {
           data.doctorId = doctorId
@@ -135,7 +138,7 @@
         this.selected = {}
       },
       eventSelected (event) {
-        this.selected = event
+//        this.selected = event
       },
       eventCreated (...test) {
 //        console.log(test)

@@ -198,11 +198,11 @@
 
   </div>
   <div class="modal-footer" v-bind:class="{hidden: (client !== null)}">
-    <button type="button" class="btn btn-primary" v-on:click="saveClient">Далее >></button>
+    <button type="button" class="btn btn-primary" v-on:click="btnSaveClient">Далее >></button>
   </div>
   <div class="modal-footer" v-bind:class="{hidden: (client === null)}">
-    <button type="button" class="btn btn-default" v-on:click="closeModal">Закрыть</button>
-    <button type="button" class="btn btn-primary" id="saveButton" v-on:click="save">Сохранить</button>
+    <button type="button" class="btn btn-default" v-on:click="btnCloseModal">Закрыть</button>
+    <button type="button" class="btn btn-primary" id="saveButton" v-on:click="btnSaveApp">Сохранить</button>
   </div>
   </div>
 </template>
@@ -217,8 +217,9 @@
   import maskedInput from 'vue-masked-input'
   // Import date picker css
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
-  import AppProps from '../../../property'
   import { bus } from './../../event/bus'
+  import clientService from '../../../service/ClientService'
+  import appService from '../../../service/AppointmentService'
 
   export default {
     props: ['params'],
@@ -265,19 +266,7 @@
         this.msisdnErr = false
         this.number = val.replace(/[^0-9]/gim, '')
         if (this.number.length === 10) {
-//          console.log(this.offices)
-          this.$http.get(AppProps.apiUrl + '/client/' + this.prefix + this.number)
-            .then(
-            response => {
-              if (!response.body) {
-//                console.log('Empty')
-              } else {
-                this.client = response.body
-                this.clientName = this.client.name
-                this.gender = this.client.gender
-              }
-//              console.log('Client', this.client)
-            })
+          clientService.findByMsisdn(this.prefix + this.number, this.setClient)
         }
       },
       clientName: function (val) {
@@ -307,7 +296,7 @@
       getOffice: function (id) {
         return this.$store.getters['office/getOfficeById'](id)
       },
-      closeModal: function () {
+      btnCloseModal: function () {
         this.$emit('close-modal', true)
       },
       sanitizeClient: function () {
@@ -324,28 +313,23 @@
         this.serviceErr = (this.serviceId === 0)
         return (!this.officeErr && !this.doctorErr && !this.dateErr && !this.timeErr && !this.serviceErr)
       },
-      saveClient: function () {
+      btnSaveClient: function () {
         let office = this.getOffice(this.officeId)
         let data = {msisdn: (this.prefix + this.number), name: this.clientName, gender: this.gender, countryId: office.city.country.id}
         if (!this.sanitizeClient()) {
           return
         }
-//        console.log(data)
-        this.$http.post(AppProps.apiUrl + '/client/', data)
-          .then(
-            response => {
-              if (response.ok) {
-                this.client = response.body
-              }
-            }
-          )
+        clientService.create(data, this.setClient)
       },
-      closeWindow: function () {
+      successSaveApp: function (app) {
         bus.$emit('appointment-modal-close')
+        bus.$emit('appointment-schedule-refresh')
       },
-      save: function () {
+      failSaveApp: function (err) {
+        console.log(err)
+      },
+      btnSaveApp: function () {
         if (!this.sanitizeAppointment()) {
-//          console.log('Unsanitize')
           return
         }
         let data = {
@@ -360,14 +344,15 @@
           bold: (this.bold !== null),
           flyer: (this.flyer !== null)
         }
-//        console.log('Data:', data)
-        this.$http.post(AppProps.apiUrl + '/appointment/', data)
-          .then(
-            response => {
-              this.closeWindow()
-              bus.$emit('appointment-schedule-refresh')
-            }
-          )
+        appService.create(data, this.successSaveApp, this.failSaveApp)
+      },
+      setClient: function (client) {
+        if (client === null) {
+          return
+        }
+        this.client = client
+        this.clientName = client.name
+        this.gender = client.gender
       }
     },
     mounted () {
@@ -376,7 +361,6 @@
       this.doctorId = (('doctorId' in this.params) && (this.params.doctorId != null)) ? this.params.doctorId : 0
       this.date = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
       this.time = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
-      console.log(this.params)
     },
     components: {
       datePicker,
