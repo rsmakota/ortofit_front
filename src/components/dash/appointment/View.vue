@@ -47,13 +47,13 @@
         <tr>
           <td><i class="fa fa-calendar"></i></td>
           <td>Дата:</td>
-          <td>{{ appointment.dateTime }}</td>
+          <td>{{ dateTime.format('DD/MM/YYYY') }}</td>
           <td></td>
         </tr>
         <tr>
           <td><i class="fa fa-clock-o"></i></td>
           <td>Время:</td>
-          <td>{{ appointment.dateTime }}</td>
+          <td>{{ dateTime.format('HH:mm') }}</td>
           <td></td>
         </tr>
         <tr>
@@ -104,6 +104,7 @@
   import appService from '../../../service/AppointmentService'
   import officeService from '../../../service/OfficeService'
   import doctorService from '../../../service/DoctorService'
+  import moment from 'moment'
 
   export default {
     props: ['params'],
@@ -114,8 +115,8 @@
         service: null,
         personServices: null,
         appReminders: null,
-        doctor: null
-
+        doctor: null,
+        dateTime: null
       }
     },
     methods: {
@@ -124,6 +125,7 @@
         this.client = appData.client
         this.service = appData.service
         this.personServices = appData.personServices
+        this.dateTime = moment(appData.appointment.dateTime)
       },
       getOfficeName: function () {
         return officeService.getOfficeName(this.appointment.officeId)
