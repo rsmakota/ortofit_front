@@ -4,6 +4,7 @@ import createPersistedState from 'vuex-persistedstate'
 import doctor from './modules/doctor'
 import office from './modules/office'
 import service from './modules/service'
+import clientDirection from './modules/clientDirection'
 
 Vue.use(Vuex)
 
@@ -30,13 +31,15 @@ const store = new Vuex.Store({
   modules: {
     doctor,
     office,
-    service
+    service,
+    clientDirection
   },
   actions: {
     loadData ({ state, getters, commit, dispatch }) {
       dispatch('doctor/loadDoctors', state.empty)
       dispatch('office/loadOffices', state.empty)
       dispatch('service/loadServices', state.empty)
+      dispatch('clientDirection/loadClientDirections', state.empty)
       // console.log(state)
     }
   },
