@@ -5,7 +5,8 @@
           <button class="close" type="button" @click="close"> <span>×</span></button>
           <h4 id="myModalLabel" class="modal-title">{{title}}</h4>
         </div>
-        <new-form v-if="state === 'new'" v-bind:params="params" ref="new"></new-form>
+        <client-form v-if="(state === 'new') && (params.client === null)" v-bind:params="params" ref="client"></client-form>
+        <new-form v-if="(state === 'new') && (params.client ==! null)" v-bind:params="params" ref="new"></new-form>
         <view-form v-if="state === 'view'" v-bind:params="params" ref="view"></view-form>
       </div>
 
@@ -13,6 +14,7 @@
 </template>
 
 <script>
+  import ClientForm from './../../client/ClientForm.vue'
   import New from './CreateForm'
   import View from './View.vue'
   import { bus } from './../../event/bus'
@@ -36,7 +38,8 @@
     },
     components: {
       'new-form': New,
-      'view-form': View
+      'view-form': View,
+      'client-form': ClientForm
     },
     mounted () {
       bus.$on('appointment-modal-close', this.close)
