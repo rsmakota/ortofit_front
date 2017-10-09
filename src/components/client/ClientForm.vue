@@ -9,7 +9,8 @@
             <div class="input-group" v-bind:class="{'has-error': msisdnErr}">
               <div class="input-group-addon">
                 <strong class="icon20">+{{ prefix }}</strong></div>
-              <masked-input v-model="msisdn" mask="111-111-11-11" placeholder="Номер телефона" type="tel" class="form-control" />
+              <masked-input v-model="msisdn" mask="111-111-11-11" :disabled="isClientEditBlocked"
+                            placeholder="Номер телефона" type="tel" class="form-control" />
             </div>
           </div>
         </div>
@@ -21,7 +22,8 @@
               <div class="input-group-addon">
                 <i class="fa fa-credit-card icon20"> </i>
               </div>
-              <input type="text" class="form-control" id="clientName" placeholder="Имя Клиента" v-model="client.name"/>
+              <input type="text" class="form-control" id="clientName" :disabled="isClientEditBlocked"
+                     placeholder="Имя Клиента" v-model="client.name"/>
             </div>
           </div>
         </div>
@@ -34,7 +36,7 @@
               <div class="input-group-addon" >
                 <i class="fa fa-venus-mars icon20"></i>
               </div>
-              <select class="form-control" id="gender" v-model="client.gender" title="gender">
+              <select class="form-control" id="gender" v-model="client.gender" title="gender" :disabled="isClientEditBlocked">
                 <option value="null" disabled>Выберите пол</option>
                 <option value="female">Женский</option>
                 <option value="male">Мужской</option>
@@ -51,12 +53,11 @@
               <div class="input-group-addon" >
                 <i class="fa fa-arrow-right icon20"></i>
               </div>
-              <select class="form-control" id="direction" v-model="client.clientDirectionId" title="gender">
+              <select class="form-control" id="direction" v-model="client.clientDirectionId" title="gender" :disabled="isClientEditBlocked">
                 <option value="null" disabled>Откуда узнали о нас</option>
                 <option v-for="cd in clientDirections" v-bind:value="cd.id">{{ cd.name }}</option>
               </select>
             </div>
-
           </div>
         </div>
 
@@ -64,7 +65,13 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" v-on:click="btnSaveClient">Далее >></button>
+      <button type="button" class="btn btn-primary" v-on:click="btnEditClient" v-if="isClientEditBlocked">
+        Редактировать
+      </button>
+      <button type="button" class="btn btn-primary" v-on:click="btnSaveClient" :disabled="freeze" v-if="!isClientEditBlocked">
+        Сохранить
+      </button>
+      <button type="button" v-if="hasClient" class="btn btn-success" v-on:click="btnNext" :disabled="freeze">Далее >></button>
     </div>
   </div>
 </template>
@@ -76,18 +83,20 @@
   import clientDirectionService from '../../service/ClientDirectionService'
 
   export default {
+    props: ['params'],
     data () {
       return {
         prefix: 38,
         msisdn: null,
         clientName: null,
-//        gender: null,
-//        clientDirectionId: null,
         msisdnErr: false,
         clientNameErr: false,
         genderErr: false,
         clientDirections: clientDirectionService.getAll(),
-        client: {name: null, gender: null, msisdn: null, clientDirectionId: null}
+        client: {name: null, gender: null, msisdn: null, clientDirectionId: null, countryId: 1},
+        hasClient: false,
+        freeze: false,
+        isClientEditBlocked: false
       }
     },
     watch: {
@@ -108,19 +117,31 @@
     methods: {
       setClient: function (client) {
         this.client = client
+        this.hasClient = true
+        this.isClientEditBlocked = true
       },
       sanitizeClient: function () {
         this.msisdnErr = (this.client.msisdn.length < 12) || this.client.msisdn.substring(0, 3) !== '380'
-        this.clientNameErr = (this.clientName === null || this.clientName.length < 1)
+        this.clientNameErr = (this.client.name === null || this.client.name.length < 1)
         this.genderErr = (this.gender === null)
         return (!this.msisdnErr && !this.clientNameErr && !this.genderErr)
       },
       btnSaveClient: function () {
-        let data = {msisdn: (this.prefix + this.number), name: this.clientName, gender: this.gender, countryId: 1}
         if (!this.sanitizeClient()) {
           return
         }
-        clientService.create(data, this.setClient)
+        this.freeze = true
+        if (!this.client.id) {
+          clientService.create(this.client, this.setClient)
+        } else {
+          clientService.update(this.client, this.setClient)
+        }
+      },
+      btnEditClient: function () {
+        this.isClientEditBlocked = false
+      },
+      btnNext: function () {
+        this.params.client = this.client
       }
     },
     components: {

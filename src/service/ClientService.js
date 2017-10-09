@@ -25,6 +25,16 @@ const clientService = {
           }
         }
       )
+  },
+  update: function (data, callback) {
+    Vue.http.put(AppProps.apiUrl + '/client/', data)
+      .then(
+        response => {
+          if (response.ok) {
+            callback(response.body)
+          }
+        }
+      )
   }
 }
 
