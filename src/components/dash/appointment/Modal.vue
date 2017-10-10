@@ -5,9 +5,10 @@
           <button class="close" type="button" @click="close"> <span>×</span></button>
           <h4 id="myModalLabel" class="modal-title">{{title}}</h4>
         </div>
-        <client-form v-if="(state === 'new') && (params.client === null)" v-bind:params="params" ref="client"></client-form>
-        <new-form v-if="(state === 'new') && (params.client ==! null)" v-bind:params="params" ref="new"></new-form>
+        <client-form v-if="(state === 'new')" ref="client" v-on:complete="clientReceived"></client-form>
+        <new-form v-if="(state === 'app')" v-bind:params="params" ref="new"></new-form>
         <view-form v-if="state === 'view'" v-bind:params="params" ref="view"></view-form>
+
       </div>
 
   </modal>
@@ -34,6 +35,10 @@
       },
       close () {
         this.$modal.hide('appointment-modal')
+      },
+      clientReceived: function (client) {
+        this.state = 'app'
+        this.params.client = client
       }
     },
     components: {
@@ -43,6 +48,7 @@
     },
     mounted () {
       bus.$on('appointment-modal-close', this.close)
+//      bus.$on('client-received', this.clientReceived)
     }
   }
 </script>

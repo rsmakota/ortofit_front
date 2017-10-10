@@ -81,9 +81,10 @@
   import maskedInput from 'vue-masked-input'
   import clientService from '../../service/ClientService'
   import clientDirectionService from '../../service/ClientDirectionService'
+//  import { bus } from './../event/bus'
 
   export default {
-    props: ['params'],
+//    props: ['params'],
     data () {
       return {
         prefix: 38,
@@ -119,6 +120,7 @@
         this.client = client
         this.hasClient = true
         this.isClientEditBlocked = true
+        this.freeze = false
       },
       sanitizeClient: function () {
         this.msisdnErr = (this.client.msisdn.length < 12) || this.client.msisdn.substring(0, 3) !== '380'
@@ -141,7 +143,9 @@
         this.isClientEditBlocked = false
       },
       btnNext: function () {
-        this.params.client = this.client
+//        this.params.client = this.client
+        this.$emit('complete', this.client)
+//        bus.$emit('client-received', this.client)
       }
     },
     components: {

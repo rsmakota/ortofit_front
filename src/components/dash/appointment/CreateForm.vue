@@ -5,59 +5,18 @@
     <ul class="list-group" style="text-align: center" v-if="fromCalendar">
       <li class="list-group-item list-group-item-info">
 
-        <span v-if="doctorId"><i class="fa fa-user-md icon20" > </i> {{ getDoctorName(doctorId) }} &nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <span v-if="officeId"><i class="fa fa-building icon20" ></i> {{ getOfficeName(officeId) }} &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-if="doctorId"><i class="fa fa-user-md icon20" > </i> {{ getDoctorName(doctorId) }} &nbsp;&nbsp;&nbsp;</span>
+        <span v-if="officeId"><i class="fa fa-building icon20" ></i> {{ getOfficeName(officeId) }} &nbsp;&nbsp;&nbsp;</span>
 
-        <span v-if="date"><i class="fa fa-calendar icon20" ></i> {{date.format('DD/MM/YYYY')}} &nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <span v-if="time"><i class="fa fa-clock-o icon20" > </i> {{time.format('HH:mm')}}</span>
+        <span v-if="date"><i class="fa fa-calendar icon20" ></i> {{date.format('DD/MM/YYYY')}} &nbsp;&nbsp;&nbsp;</span>
+        <span v-if="time"><i class="fa fa-clock-o icon20" > </i> {{time.format('HH:mm')}} &nbsp;&nbsp;&nbsp;</span>
+        <span v-if="client"><i class="fa fa-credit-card icon20" > </i> {{client.name}} </span>
       </li>
     </ul>
 
     <form class="form-horizontal">
-      <div class="form-group">
-        <label for="msisdn" class="col-sm-3 control-label">Телефон:</label>
 
-        <div class="col-sm-9">
-          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': msisdnErr}">
-            <div class="input-group-addon">
-              <strong class="icon20">+{{ prefix }}</strong></div>
-            <!--<input type="text" class="form-control" v-model="msisdn" placeholder="067-359-42-88" id="msisdn" />-->
-            <masked-input :disabled="client !== null" v-model="msisdn" mask="111-111-11-11" placeholder="Номер телефона" type="tel" class="form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="clientName" class="col-sm-3 control-label">Имя:</label>
 
-        <div class="col-sm-9">
-          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': clientNameErr}">
-            <div class="input-group-addon">
-              <i class="fa fa-credit-card icon20"> </i>
-            </div>
-            <input type="text" class="form-control" id="clientName" placeholder="Имя Клиента" v-model="clientName" :disabled="client !== null"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="gender" class="col-sm-3 control-label">Пол:</label>
-
-        <div class="col-sm-9">
-          <div class="input-group" v-bind:class="{'has-success': (client !== null), 'has-error': genderErr}">
-            <div class="input-group-addon" >
-              <i class="fa fa-venus-mars icon20"></i>
-            </div>
-            <select class="form-control" id="gender" v-model="gender" title="gender" :disabled="client !== null">
-              <option value="null" disabled>Выберите пол</option>
-              <option value="female">Женский</option>
-              <option value="male">Мужской</option>
-            </select>
-          </div>
-
-        </div>
-      </div>
-
-<div v-bind:class="{hidden: (client === null)}">
 
       <div class="form-group">
         <label for="serviceId" class="col-sm-3 control-label">Услуга:</label>
@@ -189,7 +148,7 @@
           <textarea class="form-control" rows="3" id="description" v-model="description" title="description">{{ description }}</textarea>
         </div>
       </div>
-</div>
+
       <input type="hidden" id="appId"       v-model="appId">
       <input type="hidden" id="clientId"    v-model="clientId">
       <input type="hidden" id="directionId" v-model="directionId">
@@ -361,6 +320,7 @@
       this.doctorId = (('doctorId' in this.params) && (this.params.doctorId != null)) ? this.params.doctorId : 0
       this.date = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
       this.time = (('time' in this.params) && (this.params.time instanceof moment)) ? this.params.time : null
+      this.client = this.params.client
     },
     components: {
       datePicker,
@@ -368,8 +328,4 @@
     }
   }
 </script>
-<style>
-  .icon20 {
-    width:23px;
-  }
-</style>
+
