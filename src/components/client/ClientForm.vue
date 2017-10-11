@@ -10,7 +10,7 @@
               <div class="input-group-addon">
                 <strong class="icon20">+{{ prefix }}</strong></div>
               <masked-input v-model="msisdn" mask="111-111-11-11" :disabled="isClientEditBlocked"
-                            placeholder="Номер телефона" type="tel" class="form-control" />
+                            placeholder="Номер телефона" type="tel" class="form-control" id="msisdn" />
             </div>
           </div>
         </div>
@@ -23,7 +23,7 @@
                 <i class="fa fa-credit-card icon20"> </i>
               </div>
               <input type="text" class="form-control" id="clientName" :disabled="isClientEditBlocked"
-                     placeholder="Имя Клиента" v-model="client.name"/>
+                     placeholder="Имя Клиента" v-model="client.name" @click="clientNameClick"/>
             </div>
           </div>
         </div>
@@ -36,7 +36,8 @@
               <div class="input-group-addon" >
                 <i class="fa fa-venus-mars icon20"></i>
               </div>
-              <select class="form-control" id="gender" v-model="client.gender" title="gender" :disabled="isClientEditBlocked">
+              <select class="form-control" id="gender" v-model="client.gender" @click="genderClick"
+                      title="gender" :disabled="isClientEditBlocked">
                 <option value="null" disabled>Выберите пол</option>
                 <option value="female">Женский</option>
                 <option value="male">Мужской</option>
@@ -79,22 +80,20 @@
 
 <script>
   import maskedInput from 'vue-masked-input'
-  import clientService from '../../service/ClientService'
   import clientDirectionService from '../../service/ClientDirectionService'
-//  import { bus } from './../event/bus'
 
   export default {
-//    props: ['params'],
+    props: ['client'],
     data () {
       return {
         prefix: 38,
         msisdn: null,
-        clientName: null,
         msisdnErr: false,
+        clientName: null,
         clientNameErr: false,
+        gender: null,
         genderErr: false,
         clientDirections: clientDirectionService.getAll(),
-        client: {name: null, gender: null, msisdn: null, clientDirectionId: null, countryId: 1},
         hasClient: false,
         freeze: false,
         isClientEditBlocked: false
@@ -105,27 +104,20 @@
         this.msisdnErr = false
         this.client.msisdn = this.prefix + val.replace(/[^0-9]/gim, '')
         if (this.client.msisdn.length === 12) {
-          clientService.findByMsisdn(this.client.msisdn, this.setClient)
+          this.$emit('findByMsisdn', this.client.msisdn, this.setClient)
         }
       },
-      clientName: function () {
-        this.clientNameErr = false
-      },
-      gender: function () {
-        this.genderErr = false
-      }
-    },
-    methods: {
-      setClient: function (client) {
-        this.client = client
+      client: function () {
         this.hasClient = true
         this.isClientEditBlocked = true
         this.freeze = false
-      },
+      }
+    },
+    methods: {
       sanitizeClient: function () {
-        this.msisdnErr = (this.client.msisdn.length < 12) || this.client.msisdn.substring(0, 3) !== '380'
+        this.msisdnErr = (this.client.msisdn === null) || (this.client.msisdn.length < 12) || this.client.msisdn.substring(0, 3) !== '380'
         this.clientNameErr = (this.client.name === null || this.client.name.length < 1)
-        this.genderErr = (this.gender === null)
+        this.genderErr = (this.client.gender === null)
         return (!this.msisdnErr && !this.clientNameErr && !this.genderErr)
       },
       btnSaveClient: function () {
@@ -133,23 +125,28 @@
           return
         }
         this.freeze = true
-        if (!this.client.id) {
-          clientService.create(this.client, this.setClient)
-        } else {
-          clientService.update(this.client, this.setClient)
-        }
+        this.$emit('save', this.client, this.setClient)
       },
       btnEditClient: function () {
         this.isClientEditBlocked = false
       },
       btnNext: function () {
-//        this.params.client = this.client
         this.$emit('complete', this.client)
-//        bus.$emit('client-received', this.client)
+      },
+      clientNameClick: function () {
+        this.clientNameErr = false
+      },
+      genderClick: function () {
+        this.genderErr = false
       }
     },
     components: {
       maskedInput
+    },
+    mounted () {
+      this.msisdn = ((this.client.msisdn !== null) && (this.client.msisdn.length > 1)) ? this.client.msisdn.substring(2) : null
+      this.clientName = this.client.name
+      this.gender = this.client.gender
     }
   }
 </script>

@@ -16,8 +16,15 @@ const clientService = {
           callback(((response.body) ? response.body : null))
         })
   },
-  create: function (data, callback) {
-    Vue.http.post(AppProps.apiUrl + '/client/', data)
+  save: function (client, callback) {
+    if ('id' in client) {
+      this.update(client, callback)
+      return
+    }
+    this.create(client, callback)
+  },
+  create: function (client, callback) {
+    Vue.http.post(AppProps.apiUrl + '/client/', client)
       .then(
         response => {
           if (response.ok) {
@@ -26,8 +33,8 @@ const clientService = {
         }
       )
   },
-  update: function (data, callback) {
-    Vue.http.put(AppProps.apiUrl + '/client/', data)
+  update: function (client, callback) {
+    Vue.http.put(AppProps.apiUrl + '/client/', client)
       .then(
         response => {
           if (response.ok) {
