@@ -5,14 +5,14 @@
           <button class="close" type="button" @click="close"> <span>×</span></button>
           <h4 id="myModalLabel" class="modal-title">{{title}}</h4>
         </div>
-        <client-form v-if="(state === appState.NEW)" ref="client"
+        <client-form v-if="(state === appState.FLOW.NEW)" ref="client"
                      @complete="clientReceived"
                      @save="saveClient"
                      @findByMsisdn="findClientByMsisdn"
                      :client="client">
 
         </client-form>
-        <new-form v-if="(state === appState.APP)" ref="new"
+        <new-form v-if="(state === appState.FLOW.APP)" ref="new"
                   :client="client"
                   :app="appointment"
                   :doctors="doctors"
@@ -21,7 +21,7 @@
                   @save="saveApp">
 
         </new-form>
-        <view-form v-if="(state === appState.VIEW)" ref="view"
+        <view-form v-if="(state === appState.FLOW.VIEW)" ref="view"
                    :client="client"
                    :appointment="appointment"
                    :doctor="doctor"
@@ -30,6 +30,10 @@
                    :clientDirection="clientDirection"
                    :personServices="personServices">
         </view-form>
+        <reason-form v-if="(state === appState.FLOW.CLOSE)"
+                     :reasons="reasons"
+                     @submit="closeApp">
+        </reason-form>
       </div>
 
   </modal>
@@ -40,6 +44,7 @@
   import ClientForm from './../../client/ClientForm.vue'
   import New from './AppForm'
   import View from './View.vue'
+  import CloseReason from './CloseReason.vue'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   import clientService from './../../../service/ClientService'
@@ -69,7 +74,6 @@
     },
     methods: {
       beforeOpen (event) {
-        console.log(event.params)
         this.title = event.params.title
         this.state = event.params.state
         this.params = event.params
@@ -79,7 +83,7 @@
         this.client = clientService.getEmpty()
         this.appointment = appService.getEmpty()
         this.doctor = doctorService.getEmpty()
-        if (this.state === appState.VIEW) {
+        if (this.state === appState.FLOW.VIEW) {
           appService.findById(this.params.appointmentId, this.receiveFullApp)
         }
       },
@@ -98,7 +102,7 @@
         this.$modal.hide('appointment-modal')
       },
       clientReceived: function (client) {
-        this.state = this.appState.APP
+        this.state = this.appState.FLOW.APP
         this.appointment.clientId = client.id
         this.appointment.userId = ('doctorId' in this.params) ? this.params.doctorId : null
         this.appointment.officeId = ('officeId' in this.params) ? this.params.officeId : null
@@ -119,6 +123,10 @@
       saveApp: function () {
         appService.save(this.appointment, this.close, this.errorResponse)
       },
+      closeApp: function (reasonId) {
+        this.appointment.state = appState.APP.CLOSE
+        appService.update(this.appointment, this.close, this.errorResponse)
+      },
       errorResponse: function (err) {
         console.log(err)
       }
@@ -126,7 +134,8 @@
     components: {
       'new-form': New,
       'view-form': View,
-      'client-form': ClientForm
+      'client-form': ClientForm,
+      'reason-form': CloseReason
     },
     mounted () {
       bus.$on('appointment-modal-close', this.close)

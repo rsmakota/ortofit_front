@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 import doctor from './modules/doctor'
 import office from './modules/office'
+import reason from './modules/reason'
 import service from './modules/service'
 import clientDirection from './modules/clientDirection'
 
@@ -32,12 +33,14 @@ const store = new Vuex.Store({
     doctor,
     office,
     service,
-    clientDirection
+    clientDirection,
+    reason
   },
   actions: {
     loadData ({ state, getters, commit, dispatch }) {
       dispatch('doctor/loadDoctors', state.empty)
       dispatch('office/loadOffices', state.empty)
+      dispatch('reason/loadReasons', state.empty)
       dispatch('service/loadServices', state.empty)
       dispatch('clientDirection/loadClientDirections', state.empty)
       // console.log(state)

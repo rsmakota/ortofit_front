@@ -119,7 +119,7 @@
     },
     methods: {
       appointmentModalShow: function () {
-        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: AppState.NEW, time: moment()})
+        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: AppState.FLOW.NEW, time: moment()})
       }
     },
     components: {

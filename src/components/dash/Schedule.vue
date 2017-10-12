@@ -74,12 +74,12 @@
     },
     methods: {
       dayClick (date) {
-        let params = {title: 'Запись на прием', fromCalendar: true, state: appState.NEW, dateTime: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId(), client: null}
+        let params = {title: 'Запись на прием', fromCalendar: true, state: appState.FLOW.NEW, dateTime: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId(), client: null}
         this.$modal.show('appointment-modal', params)
         return false
       },
       eventClick (event) {
-        let params = {title: 'Запись на прием', state: appState.VIEW, appointmentId: event.id}
+        let params = {title: 'Запись на прием', state: appState.FLOW.VIEW, appointmentId: event.id}
         this.$modal.show('appointment-modal', params)
         return false
       },
