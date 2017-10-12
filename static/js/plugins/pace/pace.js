@@ -679,7 +679,7 @@
   })();
 
   DocumentMonitor = (function() {
-    DocumentMonitor.prototype.states = {
+    DocumentMonitor.prototype.appState = {
       loading: 0,
       interactive: 50,
       complete: 100
@@ -688,11 +688,11 @@
     function DocumentMonitor() {
       var _onreadystatechange, _ref2,
         _this = this;
-      this.progress = (_ref2 = this.states[document.readyState]) != null ? _ref2 : 100;
+      this.progress = (_ref2 = this.appState[document.readyState]) != null ? _ref2 : 100;
       _onreadystatechange = document.onreadystatechange;
       document.onreadystatechange = function() {
-        if (_this.states[document.readyState] != null) {
-          _this.progress = _this.states[document.readyState];
+        if (_this.appState[document.readyState] != null) {
+          _this.progress = _this.appState[document.readyState];
         }
         return typeof _onreadystatechange === "function" ? _onreadystatechange.apply(null, arguments) : void 0;
       };

@@ -106,7 +106,8 @@
 
 <script>
   import MainMenu from './dash/Menu.vue'
-  import AppointmentModal from './dash/appointment/Modal'
+  import AppModal from './dash/appointment/Modal'
+  import AppState from './dash/appointment/AppointmentState'
   import moment from 'moment'
 
   export default {
@@ -118,12 +119,12 @@
     },
     methods: {
       appointmentModalShow: function () {
-        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: 'new', time: moment()})
+        this.$modal.show('appointment-modal', {title: 'Запись на прием', state: AppState.NEW, time: moment()})
       }
     },
     components: {
       'main-menu': MainMenu,
-      'appointment-modal': AppointmentModal
+      'appointment-modal': AppModal
     },
     mounted () {
       this.$store.dispatch('loadData')

@@ -37,6 +37,9 @@ const appointmentService = {
         response => {
           callback(((response.body) ? response.body : null))
         })
+  },
+  getEmpty: function () {
+    return {clientId: null, description: null, officeId: null, serviceId: null, dateTime: null, state: 1, duration: 15, userId: null, forwarder: null, bold: false, flyer: false, phoneConfirm: false}
   }
 }
 

@@ -24,6 +24,7 @@
 <script>
   import appProperty from './../../property'
   import { bus } from './../event/bus'
+  import appState from './appointment/AppointmentState'
 
   export default {
     props: {doctorId: {type: Number, 'default': null}, officeId: {type: Number, 'default': null}},
@@ -73,12 +74,12 @@
     },
     methods: {
       dayClick (date) {
-        let params = {title: 'Запись на прием', fromCalendar: true, state: 'new', dateTime: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId(), client: null}
+        let params = {title: 'Запись на прием', fromCalendar: true, state: appState.NEW, dateTime: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId(), client: null}
         this.$modal.show('appointment-modal', params)
         return false
       },
       eventClick (event) {
-        let params = {title: 'Запись на прием', state: 'view', appointmentId: event.id}
+        let params = {title: 'Запись на прием', state: appState.VIEW, appointmentId: event.id}
         this.$modal.show('appointment-modal', params)
         return false
       },

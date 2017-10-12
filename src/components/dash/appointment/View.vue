@@ -35,25 +35,25 @@
         <tr>
           <td><i class="fa fa-arrow-right"></i></td>
           <td>Источник:</td>
-          <td><span v-if="client.clientDirection">{{ client.clientDirection.name }}</span></td>
+          <td><span v-if="clientDirection">{{ clientDirection.name }}</span></td>
           <td></td>
         </tr>
         <tr>
           <td><i class="fa fa-building"></i></td>
           <td>Офис:</td>
-          <td> <span>{{ getOfficeName() }}</span></td>
+          <td> <span v-if="office">{{ office.name }}</span></td>
           <td></td>
         </tr>
         <tr>
           <td><i class="fa fa-calendar"></i></td>
           <td>Дата:</td>
-          <td>{{ dateTime.format('DD/MM/YYYY') }}</td>
+          <td><span v-if="dateTime">{{ dateTime.format('DD/MM/YYYY') }}</span></td>
           <td></td>
         </tr>
         <tr>
           <td><i class="fa fa-clock-o"></i></td>
           <td>Время:</td>
-          <td>{{ dateTime.format('HH:mm') }}</td>
+          <td><span v-if="dateTime">{{ dateTime.format('HH:mm') }}</span></td>
           <td></td>
         </tr>
         <tr>
@@ -65,7 +65,7 @@
         <tr>
           <td><i class="fa fa-user-md"></i></td>
           <td>Сотрудник:</td>
-          <td>{{ getDoctorName() }}</td>
+          <td><span v-if="doctor">{{ doctor.name }}</span></td>
           <td></td>
         </tr>
         <tr>
@@ -101,41 +101,21 @@
   </div>
 </template>
 <script>
-  import appService from '../../../service/AppointmentService'
-  import officeService from '../../../service/OfficeService'
-  import doctorService from '../../../service/DoctorService'
   import moment from 'moment'
 
   export default {
-    props: ['params'],
+    props: ['appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection'],
     data () {
       return {
-        appointment: null,
-        client: null,
-        service: null,
-        personServices: null,
-        appReminders: null,
-        doctor: null,
         dateTime: null
       }
     },
-    methods: {
-      setFullAppData: function (appData) {
-        this.appointment = appData.appointment
-        this.client = appData.client
-        this.service = appData.service
-        this.personServices = appData.personServices
-        this.dateTime = moment(appData.appointment.dateTime)
-      },
-      getOfficeName: function () {
-        return officeService.getOfficeName(this.appointment.officeId)
-      },
-      getDoctorName: function () {
-        return doctorService.getDoctorName(this.appointment.userId)
+    watch: {
+      appointment: function () {
+        if (this.appointment !== null) {
+          this.dateTime = moment(this.appointment.dateTime)
+        }
       }
-    },
-    mounted () {
-      appService.findById(this.params.appointmentId, this.setFullAppData)
     }
   }
 </script>

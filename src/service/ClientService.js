@@ -42,6 +42,9 @@ const clientService = {
           }
         }
       )
+  },
+  getEmpty: function () {
+    return {name: null, gender: null, msisdn: null, clientDirectionId: null, countryId: 1}
   }
 }
 
