@@ -28,11 +28,15 @@
                    :service="service"
                    :office="office"
                    :clientDirection="clientDirection"
-                   :personServices="personServices">
+                   :personServices="personServices"
+                   @closeApp="closeApp"
+                   @editApp="editApp"
+                   @issueApp="issueApp"
+                   @openApp="openApp">
         </view-form>
         <reason-form v-if="(state === appState.FLOW.CLOSE)"
                      :reasons="reasons"
-                     @submit="closeApp">
+                     @submit="closeAppByReason">
         </reason-form>
       </div>
 
@@ -47,6 +51,7 @@
   import CloseReason from './CloseReason.vue'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
+  import reasonService from './../../../service/ReasonService'
   import clientService from './../../../service/ClientService'
   import officeService from '../../../service/OfficeService'
   import doctorService from '../../../service/DoctorService'
@@ -69,6 +74,7 @@
         appointment: null,
         personServices: null,
         clientDirection: null,
+        reasons: null,
         appState: appState
       }
     },
@@ -83,6 +89,7 @@
         this.client = clientService.getEmpty()
         this.appointment = appService.getEmpty()
         this.doctor = doctorService.getEmpty()
+        this.reasons = reasonService.getAll()
         if (this.state === appState.FLOW.VIEW) {
           appService.findById(this.params.appointmentId, this.receiveFullApp)
         }
@@ -123,7 +130,21 @@
       saveApp: function () {
         appService.save(this.appointment, this.close, this.errorResponse)
       },
-      closeApp: function (reasonId) {
+      /** VUEW Action handler **/
+      closeApp: function () {
+        this.state = appState.FLOW.CLOSE
+      },
+      editApp: function () {
+        this.state = appState.FLOW.APP
+      },
+      issueApp: function () {
+        // TODO: The most difficult part
+      },
+      openApp: function () {
+        this.appointment.state = appState.APP.NEW
+        appService.update(this.appointment, this.close, this.errorResponse)
+      },
+      closeAppByReason: function (reasonId) {
         this.appointment.state = appState.APP.CLOSE
         appService.update(this.appointment, this.close, this.errorResponse)
       },

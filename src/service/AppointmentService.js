@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import AppProps from '../property'
+import moment from 'moment'
 
 const appointmentService = {
   create: function (appointment, callback, errHandler) {
@@ -35,6 +36,10 @@ const appointmentService = {
     Vue.http.get(AppProps.apiUrl + '/appointment/' + id)
       .then(
         response => {
+          let app = (response.body) ? response.body : null
+          if (app) {
+            app.appointment.dateTime = moment(app.appointment.dateTime)
+          }
           callback(((response.body) ? response.body : null))
         })
   },

@@ -8,7 +8,7 @@
             <td class="col-sm-2">&nbsp;</td>
             <td>
               <label class="radio">
-                <input type="radio" id="reasonId" v-model="reasonId" value="reason.id"/> {{ reason.name }}
+                <input type="radio" id="reasonId" v-model="reasonId" :value="reason.id"/> {{ reason.name }}
               </label>
             </td>
           </tr>

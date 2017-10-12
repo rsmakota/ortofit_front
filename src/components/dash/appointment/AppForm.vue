@@ -65,7 +65,6 @@
             <div class="input-group-addon">
               <i class="fa fa-calendar icon20"></i>
             </div>
-            <!--<input id="date" name="date" class="form-control pull-right active" type="text" />-->
             <date-picker v-model="date" :config="dtConf" id="date" ></date-picker>
           </div>
         </div>
@@ -80,7 +79,6 @@
             <div class="input-group-addon">
               <i class="fa fa-clock-o icon20"></i>
             </div>
-            <!--<input id="time" class="form-control pull-right active" type="text" v-model="time" />-->
             <date-picker v-model="time" :config="tConf" id="time"></date-picker>
           </div>
         </div>

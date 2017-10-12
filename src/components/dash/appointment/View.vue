@@ -1,7 +1,7 @@
 <template>
   <div v-if="appointment">
     <div class="modal-body">
-      <div class="callout callout-info" v-if="(appointment.state == 3)">
+      <div class="callout callout-info" v-if="(appointment.state === appState.APP.CLOSE)">
         <!--need app reasons-->
       </div>
 
@@ -87,34 +87,50 @@
         </tr>
       </tbody>
       </table>
-
-
     </div>
 
-    <div class="modal-footer">
-
-      <button type="button" class="btn btn-danger"  id="reasonButton">Закрыть по причине</button>
-      <button type="button" class="btn btn-primary" id="editButton">Редактировать</button>
-      <button type="button" class="btn btn-success" id="orderButton">Оформить</button>
-      <button v-if="(appointment.state == 3)" type="button" class="btn btn-success" id="openButton">Открыть</button>
+    <div class="modal-footer" v-if="appointment.state === appState.APP.NEW">
+      <button type="button" class="btn btn-danger"  @click="closeApp">Закрыть по причине</button>
+      <button type="button" class="btn btn-primary" @click="editApp">Редактировать</button>
+      <button type="button" class="btn btn-success" @click="issueApp">Оформить</button>
     </div>
+    <div class="modal-footer" v-if="appointment.state === appState.APP.CLOSE">
+      <button type="button" class="btn btn-success" @click="openApp" >Открыть</button>
+    </div>
+
   </div>
 </template>
 <script>
-  import moment from 'moment'
+//  import moment from 'moment'
+  import appState from './AppointmentState'
 
   export default {
     props: ['appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection'],
     data () {
       return {
-        dateTime: null
+        dateTime: null,
+        appState: appState
       }
     },
     watch: {
       appointment: function () {
         if (this.appointment !== null) {
-          this.dateTime = moment(this.appointment.dateTime)
+          this.dateTime = this.appointment.dateTime
         }
+      }
+    },
+    methods: {
+      closeApp: function () {
+        this.$emit('closeApp')
+      },
+      editApp: function () {
+        this.$emit('editApp')
+      },
+      issueApp: function () {
+        this.$emit('issueApp')
+      },
+      openApp: function () {
+        this.$emit('openApp')
       }
     }
   }
