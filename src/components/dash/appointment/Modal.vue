@@ -37,6 +37,7 @@
         </view-form>
         <reason-form v-if="(state === appState.FLOW.CLOSE)"
                      :reasons="reasons"
+                     :appointment="appointment"
                      @submit="closeAppByReason">
         </reason-form>
       </div>

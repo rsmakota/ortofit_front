@@ -3,7 +3,7 @@
     <div class="modal-body">
       <div class="callout callout-info" v-if="(appointment.state === appState.APP.CLOSE)">
 
-          <strong v-for="reason in appReasons">{{ getReason(reason) }}</strong>
+          <div v-for="reason in appReasons"><strong>{{ getReason(reason) }}</strong></div>
 
       </div>
 
@@ -138,7 +138,7 @@
       },
       getReason: function (reason) {
         let r = reasonService.getReasonById(reason.reasonId)
-        return moment(reason.created).format('DD/MM/YYYY') + ' | Причина закрытия - ' + r.name
+        return ' | ' + moment(reason.created).format('DD/MM/YYYY') + ' | Причина закрытия - ' + r.name
       }
     }
   }
