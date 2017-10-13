@@ -2,7 +2,9 @@
   <div v-if="appointment">
     <div class="modal-body">
       <div class="callout callout-info" v-if="(appointment.state === appState.APP.CLOSE)">
-        <!--need app reasons-->
+
+          <strong v-for="reason in appReasons">{{ getReason(reason) }}</strong>
+
       </div>
 
       <table class="table table-striped">
@@ -103,9 +105,11 @@
 <script>
 //  import moment from 'moment'
   import appState from './AppointmentState'
+  import reasonService from './../../../service/ReasonService'
+  import moment from 'moment'
 
   export default {
-    props: ['appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection'],
+    props: ['appReasons', 'appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection'],
     data () {
       return {
         dateTime: null,
@@ -131,6 +135,10 @@
       },
       openApp: function () {
         this.$emit('openApp')
+      },
+      getReason: function (reason) {
+        let r = reasonService.getReasonById(reason.reasonId)
+        return moment(reason.created).format('DD/MM/YYYY') + ' | Причина закрытия - ' + r.name
       }
     }
   }

@@ -45,6 +45,7 @@
 
 <script>
   import { bus } from './../event/bus'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'MainMenu',
@@ -52,7 +53,6 @@
       return {
         doctorsTree: false,
         activeMenu: 'doctorList',
-        doctors: [],
         activeDoctorId: null
       }
     },
@@ -72,13 +72,12 @@
         } else {
           this.activeMenu = menuId
         }
-      },
-      initDoctors: function () {
-        this.doctors = this.$store.state.doctor.doctors
       }
     },
-    mounted () {
-      bus.$on('doctor-store-loaded', this.initDoctors)
+    computed: {
+      ...mapGetters({
+        doctors: 'doctor/getAll'
+      })
     }
   }
 </script>

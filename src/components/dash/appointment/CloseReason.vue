@@ -24,7 +24,7 @@
 
 <script>
   export default {
-    props: ['reasons'],
+    props: ['reasons', 'appointment'],
     data () {
       return {
         reasonId: null
@@ -32,7 +32,8 @@
     },
     methods: {
       btnSave: function () {
-        this.$emit('submit', this.reasonId)
+        let reason = {appointmentId: this.appointment.id, reasonId: this.reasonId}
+        this.$emit('submit', reason)
       }
     }
   }

@@ -29,6 +29,7 @@
                    :office="office"
                    :clientDirection="clientDirection"
                    :personServices="personServices"
+                   :appReasons="appReasons"
                    @closeApp="closeApp"
                    @editApp="editApp"
                    @issueApp="issueApp"
@@ -44,6 +45,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import appState from './AppointmentState'
   import ClientForm from './../../client/ClientForm.vue'
   import New from './AppForm'
@@ -51,11 +53,12 @@
   import CloseReason from './CloseReason.vue'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
-  import reasonService from './../../../service/ReasonService'
+  //  import reasonService from './../../../service/ReasonService'
   import clientService from './../../../service/ClientService'
   import officeService from '../../../service/OfficeService'
   import doctorService from '../../../service/DoctorService'
   import serviceService from '../../../service/ServiceService'
+  import appReasonService from '../../../service/AppointmentReasonService'
   import clientDirectionService from '../../../service/ClientDirectionService'
 
   export default {
@@ -68,13 +71,10 @@
         doctor: null,
         office: null,
         service: null,
-        doctors: null,
-        offices: null,
-        services: null,
         appointment: null,
         personServices: null,
         clientDirection: null,
-        reasons: null,
+        appReasons: null,
         appState: appState
       }
     },
@@ -83,15 +83,12 @@
         this.title = event.params.title
         this.state = event.params.state
         this.params = event.params
-        this.doctors = doctorService.getAll()
-        this.offices = officeService.getAll()
-        this.services = serviceService.getAll()
         this.client = clientService.getEmpty()
         this.appointment = appService.getEmpty()
         this.doctor = doctorService.getEmpty()
-        this.reasons = reasonService.getAll()
         if (this.state === appState.FLOW.VIEW) {
           appService.findById(this.params.appointmentId, this.receiveFullApp)
+          appReasonService.findAllByAppId(this.params.appointmentId, reasons => { this.appReasons = reasons }, this.errorResponse)
         }
       },
       receiveFullApp: function (fullApp) {
@@ -144,8 +141,9 @@
         this.appointment.state = appState.APP.NEW
         appService.update(this.appointment, this.close, this.errorResponse)
       },
-      closeAppByReason: function (reasonId) {
+      closeAppByReason: function (reason) {
         this.appointment.state = appState.APP.CLOSE
+        appReasonService.create(reason, () => {}, this.errorResponse)
         appService.update(this.appointment, this.close, this.errorResponse)
       },
       errorResponse: function (err) {
@@ -160,6 +158,14 @@
     },
     mounted () {
       bus.$on('appointment-modal-close', this.close)
+    },
+    computed: {
+      ...mapGetters({
+        doctors: 'doctor/getAll',
+        offices: 'office/getAll',
+        services: 'service/getAll',
+        reasons: 'reason/getAll'
+      })
     }
   }
 </script>

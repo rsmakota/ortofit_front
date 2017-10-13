@@ -40,7 +40,7 @@ const appointmentService = {
           if (app) {
             app.appointment.dateTime = moment(app.appointment.dateTime)
           }
-          callback(((response.body) ? response.body : null))
+          callback(app)
         })
   },
   getEmpty: function () {

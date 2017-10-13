@@ -25,12 +25,12 @@
   import appProperty from './../../property'
   import { bus } from './../event/bus'
   import appState from './appointment/AppointmentState'
+  import { mapGetters } from 'vuex'
 
   export default {
     props: {doctorId: {type: Number, 'default': null}, officeId: {type: Number, 'default': null}},
     data () {
       return {
-        offices: {type: Object},
         currentOfficeId: this.officeId,
         currentDoctorId: this.doctorId,
         config: {
@@ -143,12 +143,15 @@
       },
       eventCreated (...test) {
 //        console.log(test)
-      },
-      loadOffices () {
-        this.offices = this.$store.state.office.offices
       }
+//      loadOffices () {
+//        this.offices = this.$store.state.office.offices
+//      }
     },
     computed: {
+      ...mapGetters({
+        offices: 'office/getAll'
+      }),
       eventSources () {
         //      const self = this
         return [
@@ -165,7 +168,6 @@
     mounted () {
       this.currentOfficeId = this.getOfficeId()
       bus.$on('menu-click-doctor-event', this.setDoctorId)
-      bus.$on('office-store-loaded', this.loadOffices)
       bus.$on('appointment-schedule-refresh', this.refreshEvents)
     }
   }
