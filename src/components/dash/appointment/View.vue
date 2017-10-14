@@ -97,7 +97,7 @@
       <button type="button" class="btn btn-success" @click="issueApp">Оформить</button>
     </div>
     <div class="modal-footer" v-if="appointment.state === appState.APP.CLOSE">
-      <button type="button" class="btn btn-success" @click="openApp" >Открыть</button>
+      <button type="button" class="btn btn-success" @click="openAppEventHandler" >Открыть</button>
     </div>
 
   </div>

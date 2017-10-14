@@ -1,5 +1,6 @@
 import store from '../store'
 import Vue from 'vue'
+import AppProps from '../property'
 
 const officeService = {
   getOfficeName: function (id) {
@@ -12,7 +13,7 @@ const officeService = {
     return store.getters['office/getOfficeById'](id)
   },
   loadAll: function (callback) {
-    Vue.http.get('office/')
+    Vue.http.get(AppProps.apiUrl + '/office/')
       .then(response => {
         callback(response.body)
       })

@@ -6,6 +6,7 @@ import office from './modules/office'
 import reason from './modules/reason'
 import service from './modules/service'
 import clientDirection from './modules/clientDirection'
+import familyStatus from './modules/familyStatus'
 
 Vue.use(Vuex)
 
@@ -34,7 +35,8 @@ const store = new Vuex.Store({
     office,
     service,
     clientDirection,
-    reason
+    reason,
+    familyStatus
   },
   actions: {
     loadData ({ state, getters, commit, dispatch }) {
@@ -43,7 +45,7 @@ const store = new Vuex.Store({
       dispatch('reason/loadReasons', state.empty)
       dispatch('service/loadServices', state.empty)
       dispatch('clientDirection/loadClientDirections', state.empty)
-      // console.log(state)
+      dispatch('familyStatus/loadFamilyStatuses', state.empty)
     }
   },
   plugins: [createPersistedState({paths: ['auth', 'officeId']})]

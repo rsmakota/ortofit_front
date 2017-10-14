@@ -9,7 +9,7 @@
             <div class="input-group" v-bind:class="{'has-error': msisdnErr}">
               <div class="input-group-addon">
                 <strong class="icon20">+{{ prefix }}</strong></div>
-              <masked-input v-model="msisdn" mask="111-111-11-11" :disabled="isClientEditBlocked"
+              <masked-input v-model="msisdn" mask="111-111-11-11" :disabled="isClientEditBlocked || (client.id !== null)"
                             placeholder="Номер телефона" type="tel" class="form-control" id="msisdn" />
             </div>
           </div>
@@ -46,11 +46,11 @@
 
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="hasDirectionEl">
           <label for="direction" class="col-sm-3 control-label">Источник:</label>
 
           <div class="col-sm-9">
-            <div class="input-group">
+            <div class="input-group" v-bind:class="{'has-error': clientDirectionErr}">
               <div class="input-group-addon" >
                 <i class="fa fa-arrow-right icon20"></i>
               </div>
@@ -81,9 +81,10 @@
 <script>
   import maskedInput from 'vue-masked-input'
   import clientDirectionService from '../../service/ClientDirectionService'
+  import appState from './../dash/appointment/AppointmentState'
 
   export default {
-    props: ['client'],
+    props: ['client', 'mode'],
     data () {
       return {
         prefix: 38,
@@ -94,6 +95,7 @@
         gender: null,
         genderErr: false,
         clientDirections: clientDirectionService.getAll(),
+        clientDirectionErr: false,
         hasClient: false,
         freeze: false,
         isClientEditBlocked: false
@@ -118,6 +120,7 @@
         this.msisdnErr = (this.client.msisdn === null) || (this.client.msisdn.length < 12) || this.client.msisdn.substring(0, 3) !== '380'
         this.clientNameErr = (this.client.name === null || this.client.name.length < 1)
         this.genderErr = (this.client.gender === null)
+        this.clientDirectionErr = (this.client.clientDirectionId === null) && this.hasDirectionEl
         return (!this.msisdnErr && !this.clientNameErr && !this.genderErr)
       },
       btnSaveClient: function () {
@@ -147,6 +150,11 @@
       this.msisdn = ((this.client.msisdn !== null) && (this.client.msisdn.length > 1)) ? this.client.msisdn.substring(2) : null
       this.clientName = this.client.name
       this.gender = this.client.gender
+    },
+    computed: {
+      hasDirectionEl: function () {
+        return this.mod === appState.MOD.ISSUE
+      }
     }
   }
 </script>
