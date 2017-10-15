@@ -69,7 +69,7 @@
       <button type="button" class="btn btn-primary" v-on:click="btnEditClient" v-if="isClientEditBlocked">
         Редактировать
       </button>
-      <button type="button" class="btn btn-primary" v-on:click="btnSaveClient" :disabled="freeze" v-if="!isClientEditBlocked">
+      <button type="button" class="btn btn-primary" v-on:click="btnSavePerson" :disabled="freeze" v-if="!isClientEditBlocked">
         Сохранить
       </button>
       <button type="button" v-if="hasClient" class="btn btn-success" v-on:click="btnNext" :disabled="freeze">Далее >></button>
@@ -123,7 +123,7 @@
         this.clientDirectionErr = (this.client.clientDirectionId === null) && this.hasDirectionEl
         return (!this.msisdnErr && !this.clientNameErr && !this.genderErr)
       },
-      btnSaveClient: function () {
+      btnSavePerson: function () {
         if (!this.sanitizeClient()) {
           return
         }

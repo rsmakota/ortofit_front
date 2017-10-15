@@ -5,7 +5,8 @@ const appState = {
     VIEW: 'view',
     CLOSE: 'close',
     CHOOSE_PERSON: 'choose_person',
-    NEW_PERSON: 'new_person'
+    NEW_PERSON: 'new_person',
+    SERVICE: 'service'
   },
   APP: {
     NEW: 1,

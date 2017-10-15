@@ -24,6 +24,13 @@ const personService = {
         }
       )
   },
+  save: function (person, callback, errHandler) {
+    if ('id' in person) {
+      this.update(person, callback, errHandler)
+      return
+    }
+    this.create(person, callback, errHandler)
+  },
   findAllByClientId: function (clientId, callback, errHandler) {
     Vue.http.get(AppProps.apiUrl + '/person/client_id/' + clientId)
       .then(

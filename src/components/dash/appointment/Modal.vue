@@ -192,7 +192,7 @@
         this.person = person
       },
       savePersonEventHandler: function () {
-        console.log(this.person)
+        personService.save(this.person, () => { this.state = appState.FLOW.SERVICE }, this.errorResponse)
       },
       errorResponse: function (err) {
         console.log(err)
