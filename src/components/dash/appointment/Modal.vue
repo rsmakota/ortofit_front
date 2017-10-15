@@ -34,6 +34,7 @@
                    @closeApp="closeAppEventHandler"
                    @editApp="editAppEventHandler"
                    @issueApp="issueAppEventHandler"
+                   @callApp="callAppEventHandler"
                    @openApp="openAppEventHandler">
         </view-form>
         <reason-form v-if="(state === appState.FLOW.CLOSE)"
@@ -46,10 +47,17 @@
                        :office="office"
                        :client="client"
                        :persons="persons"
-                       @newPerson="newPersonEventHandler"
-                       @choosed="choosedPersonEventHandler">
+                       @new="newPersonEventHandler"
+                       @choose="chosenPersonEventHandler">
 
         </choose-person>
+        <person-form v-if="(state === appState.FLOW.NEW_PERSON)"
+                     :familyStatuses="familyStatuses"
+                     :person="person"
+                     :client="client"
+                     @save="savePersonEventHandler"
+        >
+        </person-form>
       </div>
 
   </modal>
@@ -63,6 +71,7 @@
   import View from './View'
   import CloseReason from './CloseReason'
   import ChoosePerson from './ChoosePerson'
+  import PersonForm from './../../person/PersonForm'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   //  import reasonService from './../../../service/ReasonService'
@@ -73,7 +82,7 @@
   import appReasonService from './../../../service/AppointmentReasonService'
   import clientDirectionService from './../../../service/ClientDirectionService'
   import personService from './../../../service/PersonService'
-//  import familyStatus from './../../../service/FamilyStatusService'
+  import familyStatusService from './../../../service/FamilyStatusService'
 
   export default {
     data () {
@@ -89,6 +98,7 @@
         personServices: null,
         clientDirection: null,
         persons: null,
+        person: null,
         appReasons: null,
         mod: appState.MOD.EDIT,
         appState: appState
@@ -124,10 +134,6 @@
       },
       clientCompleteEventHandler: function (client) {
         this.state = (this.mod === appState.MOD.EDIT) ? appState.FLOW.APP : appState.FLOW.CHOOSE_PERSON
-        if (this.state === appState.FLOW.CHOOSE_PERSON) {
-          personService.findAllByClientId(this.client.id, persons => { this.persons = persons })
-          return
-        }
         this.appointment.clientId = client.id
         this.appointment.userId = ('doctorId' in this.params) ? this.params.doctorId : null
         this.appointment.officeId = ('officeId' in this.params) ? this.params.officeId : null
@@ -149,6 +155,10 @@
         appService.save(this.appointment, this.closeEventHandler, this.errorResponse)
       },
       /** VUEW Action handler **/
+      callAppEventHandler: function () {
+        this.appointment.phoneConfirm = !this.appointment.phoneConfirm
+        appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
+      },
       closeAppEventHandler: function () {
         this.state = appState.FLOW.CLOSE
       },
@@ -157,6 +167,7 @@
       },
       issueAppEventHandler: function () {
         this.mod = appState.MOD.ISSUE
+        personService.findAllByClientId(this.client.id, persons => { this.persons = persons })
         this.state = (this.client.direction === null) ? appState.FLOW.NEW : appState.FLOW.CHOOSE_PERSON
       },
       openAppEventHandler: function () {
@@ -168,6 +179,21 @@
         appReasonService.create(reason, () => {}, this.errorResponse)
         appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
       },
+      newPersonEventHandler: function (isClient) {
+        this.person = personService.getEmpty()
+        if (isClient) {
+          this.person.name = this.client.name
+          this.person.gender = this.client.gender
+          this.person.familyStatus = familyStatusService.getFamilyStatusClient()
+        }
+        this.state = appState.FLOW.NEW_PERSON
+      },
+      chosenPersonEventHandler: function (person) {
+        this.person = person
+      },
+      savePersonEventHandler: function () {
+        console.log(this.person)
+      },
       errorResponse: function (err) {
         console.log(err)
       }
@@ -177,7 +203,8 @@
       'view-form': View,
       'client-form': ClientForm,
       'reason-form': CloseReason,
-      'choose-person': ChoosePerson
+      'choose-person': ChoosePerson,
+      'person-form': PersonForm
     },
     mounted () {
       bus.$on('appointment-modal-close', this.closeEventHandler)

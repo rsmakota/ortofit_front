@@ -3,38 +3,38 @@
     <div class="modal-body">
       <info-panel :office="office" :client="client" :dateTime="appointment.dateTime"></info-panel>
       <table class="table table-striped">
+        <tbody>
         <tr>
-          <td>Самому клиенту</td>
-          <td><i class="fa fa-credit-card"></i></td>
+          <td>Самому клиенту</td> <td><i class="fa fa-credit-card"></i></td>
           <td>{{ client.name }}</td>
-          <td><button type="button" class="btn btn-success" id="clientButton"> <i class="fa  fa-arrow-right"></i> </button></td>
+          <td>
+            <button type="button" class="btn btn-success" @click="chooseClient"><i class="fa fa-arrow-right"></i></button>
+          </td>
         </tr>
 
         <tr v-for="person in persons" v-if="person.isClient == false">
           <td>{{ person.familyStatus.name }}</td>
+          <td><i class="fa fa-users"></i></td><td>{{ person.name }}</td>
           <td>
-            <i class="fa fa-users"></i>
+            <button type="button" class="btn btn-success personButton" @click="choosePerson(person)">
+              <i class="fa fa-arrow-right"></i></button>
           </td>
-          <td>{{ person.name }}</td>
-          <td><button type="button" class="btn btn-success personButton"> <i class="fa fa-arrow-right"></i> </button></td>
-
         </tr>
 
         <tr>
-          <td>Новому члену семьи</td>
-          <td><i class="fa fa-user-plus"></i></td>
+          <td>Новому члену семьи</td><td><i class="fa fa-user-plus"></i></td>
           <td>Когда нет в списке выше</td>
           <td>
-            <button type="button" class="btn btn-success"><i class="fa fa-user-plus"></i></button>
+            <button type="button" class="btn btn-success" @click="newPerson(false)"><i class="fa fa-user-plus"></i></button>
           </td>
         </tr>
-
+        </tbody>
       </table>
     </div>
 
-  <div class="modal-footer">
-    <!--<button type="button" class="btn btn-success" @click="btnSave" :disabled="(reasonId == null)">Дальше</button>-->
-  </div>
+    <div class="modal-footer">
+
+    </div>
   </div>
 </template>
 
@@ -49,7 +49,21 @@
       }
     },
     methods: {
-      //
+      chooseClient () {
+        for (let person in this.persons) {
+          if (person.isClient) {
+            this.choosePerson(person)
+            return
+          }
+        }
+        this.newPerson(true)
+      },
+      newPerson (isClient) {
+        this.$emit('new', isClient)
+      },
+      choosePerson (person) {
+        this.$emit('choose', person)
+      }
     },
     components: {
       InfoPanel,

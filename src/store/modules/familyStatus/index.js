@@ -8,6 +8,9 @@ const getters = {
   getFamilyStatusById: (state, getters) => (id) => {
     return state.familyStatuses.find(familyStatus => familyStatus.id === id)
   },
+  getFamilyStatusByAlias: (state, getters) => (alias) => {
+    return state.familyStatuses.find(familyStatus => familyStatus.alias === alias)
+  },
   getAll: state => state.familyStatuses
 }
 

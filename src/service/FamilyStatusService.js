@@ -9,6 +9,9 @@ const familyStatusService = {
   getFamilyStatusById: function (id) {
     return store.getters['familyStatus/getFamilyStatusById'](id)
   },
+  getFamilyStatusClient: function () {
+    return store.getters['familyStatus/getFamilyStatusByAlias']('self')
+  },
   loadAll: function (callback) {
     Vue.http.get(AppProps.apiUrl + '/family_status/')
       .then(response => {

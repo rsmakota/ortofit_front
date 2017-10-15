@@ -4,7 +4,8 @@ const appState = {
     APP: 'app',
     VIEW: 'view',
     CLOSE: 'close',
-    CHOOSE_PERSON: 'choose_person'
+    CHOOSE_PERSON: 'choose_person',
+    NEW_PERSON: 'new_person'
   },
   APP: {
     NEW: 1,

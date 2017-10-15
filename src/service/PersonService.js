@@ -33,6 +33,9 @@ const personService = {
         response => {
           errHandler(response.error)
         })
+  },
+  getEmpty: function (isClient) {
+    return {id: null, name: null, gender: null, familyStatus: null, born: null, isClient: isClient}
   }
 }
 

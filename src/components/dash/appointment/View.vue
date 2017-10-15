@@ -92,6 +92,9 @@
     </div>
 
     <div class="modal-footer" v-if="appointment.state === appState.APP.NEW">
+      <button type="button" class="btn" @click="callApp"
+              v-bind:class="{'btn-default': appointment.phoneConfirm, 'btn-warning': !appointment.phoneConfirm }">
+        <i class="fa fa-phone icon20"></i> {{ appointment.phoneConfirm ? 'Отменить' : 'Звонок' }}</button>
       <button type="button" class="btn btn-danger"  @click="closeApp">Закрыть по причине</button>
       <button type="button" class="btn btn-primary" @click="editApp">Редактировать</button>
       <button type="button" class="btn btn-success" @click="issueApp">Оформить</button>
@@ -135,6 +138,9 @@
       },
       openApp: function () {
         this.$emit('openApp')
+      },
+      callApp: function () {
+        this.$emit('callApp')
       },
       getReason: function (reason) {
         let r = reasonService.getReasonById(reason.reasonId)

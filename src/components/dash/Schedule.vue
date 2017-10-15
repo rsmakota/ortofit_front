@@ -36,6 +36,7 @@
         config: {
           eventClick: this.eventClick,
           dayClick: this.dayClick,
+          eventRender: this.eventRender,
           header: {
             left: 'prev,next today',
             center: 'title',
@@ -79,9 +80,15 @@
         return false
       },
       eventClick (event) {
-        let params = {title: 'Запись на прием', state: appState.FLOW.VIEW, appointmentId: event.id}
+        let params = {title: 'Оформление', state: appState.FLOW.VIEW, appointmentId: event.id}
         this.$modal.show('appointment-modal', params)
         return false
+      },
+      eventRender (event, element) {
+        if (event.phone) {
+          element.find('.fc-title').append(' <i class="fa fa-phone icon20" style="position: absolute; right:5px; top:2px;"></i>')
+        }
+        element.addClass(event.class)
       },
       getOfficeId () {
         if (this.currentOfficeId != null) {
