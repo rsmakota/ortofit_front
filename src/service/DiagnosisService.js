@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import AppProps from '../property'
 
-const personService = {
+const DiagnosisService = {
   create: function (person, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/person/', person)
+    Vue.http.post(AppProps.apiUrl + '/diagnosis/', person)
       .then(
         response => {
           callback(response.body)
@@ -14,7 +14,7 @@ const personService = {
       )
   },
   update: function (person, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/person/', person)
+    Vue.http.put(AppProps.apiUrl + '/diagnosis/', person)
       .then(
         response => {
           callback(response.body)
@@ -31,8 +31,8 @@ const personService = {
     }
     this.create(person, callback, errHandler)
   },
-  findAllByClientId: function (clientId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/person/client_id/' + clientId)
+  findAllByPersonId: function (personId, callback, errHandler) {
+    Vue.http.get(AppProps.apiUrl + '/diagnosis/person/' + personId)
       .then(
         response => {
           callback(((response.body) ? response.body : null))
@@ -41,9 +41,9 @@ const personService = {
           errHandler(response.error)
         })
   },
-  getEmpty: function (clientId, isClient) {
-    return {id: null, clientId: clientId, name: null, gender: null, familyStatus: null, born: null, isClient: isClient}
+  getEmpty: function (personId) {
+    return { id: null, personId: personId, description: null }
   }
 }
 
-export default personService
+export default DiagnosisService

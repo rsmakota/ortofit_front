@@ -6,9 +6,9 @@
           <h4 id="myModalLabel" class="modal-title">{{title}}</h4>
         </div>
         <client-form v-if="(state === appState.FLOW.NEW)" ref="client"
-                     @complete="clientCompleteEventHandler"
-                     @save="saveClientEventHandler"
-                     @findByMsisdn="findClientByMsisdnEventHandler"
+                     @complete="clientFormComplete"
+                     @save="clientFormSave"
+                     @findByMsisdn="clientFormFindByMsisdn"
                      :client="client"
                      :mod="mod">
 
@@ -19,7 +19,7 @@
                   :doctors="doctors"
                   :offices="offices"
                   :services="services"
-                  @save="saveAppEventHandler">
+                  @save="appFormSave">
 
         </new-form>
         <view-form v-if="(state === appState.FLOW.VIEW)" ref="view"
@@ -31,33 +31,39 @@
                    :clientDirection="clientDirection"
                    :personServices="personServices"
                    :appReasons="appReasons"
-                   @closeApp="closeAppEventHandler"
-                   @editApp="editAppEventHandler"
-                   @issueApp="issueAppEventHandler"
-                   @callApp="callAppEventHandler"
-                   @openApp="openAppEventHandler">
+                   @closeApp="viewCloseApp"
+                   @editApp="viewEditApp"
+                   @issueApp="viewIssueApp"
+                   @callApp="viewCallApp"
+                   @openApp="viewOpenApp">
         </view-form>
         <reason-form v-if="(state === appState.FLOW.CLOSE)"
                      :reasons="reasons"
                      :appointment="appointment"
-                     @submit="closeAppByReasonEventHandler">
+                     @submit="viewCloseAppByReason">
         </reason-form>
         <choose-person v-if="(state === appState.FLOW.CHOOSE_PERSON)"
                        :appointment="appointment"
                        :office="office"
                        :client="client"
                        :persons="persons"
-                       @new="newPersonEventHandler"
-                       @choose="chosenPersonEventHandler">
+                       @new="chPersonNewPerson"
+                       @choose="chPersonChoose">
 
         </choose-person>
         <person-form v-if="(state === appState.FLOW.NEW_PERSON)"
                      :familyStatuses="familyStatuses"
                      :person="person"
                      :client="client"
-                     @save="savePersonEventHandler"
-        >
+                     @save="personFormSave">
         </person-form>
+        <diagnosis v-if="(state === appState.FLOW.DIAGNOSIS)"
+          :appointment="appointment"
+          :office="office"
+          :client="client"
+          :diagnoses="diagnoses"
+          :person="person"
+          @save="diagnosisSave"></diagnosis>
       </div>
 
   </modal>
@@ -72,6 +78,7 @@
   import CloseReason from './CloseReason'
   import ChoosePerson from './ChoosePerson'
   import PersonForm from './../../person/PersonForm'
+  import Diagnosis from './Diagnosis'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   //  import reasonService from './../../../service/ReasonService'
@@ -100,6 +107,7 @@
         persons: null,
         person: null,
         appReasons: null,
+        diagnoses: null,
         mod: appState.MOD.EDIT,
         appState: appState
       }
@@ -132,7 +140,7 @@
         bus.$emit('appointment-schedule-refresh')
         this.$modal.hide('appointment-modal')
       },
-      clientCompleteEventHandler: function (client) {
+      clientFormComplete: function (client) {
         this.state = (this.mod === appState.MOD.EDIT) ? appState.FLOW.APP : appState.FLOW.CHOOSE_PERSON
         this.appointment.clientId = client.id
         this.appointment.userId = ('doctorId' in this.params) ? this.params.doctorId : null
@@ -145,42 +153,47 @@
         }
         this.client = client
       },
-      findClientByMsisdnEventHandler: function () {
+      clientFormFindByMsisdn: function () {
         clientService.findByMsisdn(this.client.msisdn, this.setClient)
       },
-      saveClientEventHandler: function () {
+      clientFormSave: function () {
         clientService.save(this.client, this.setClient)
       },
-      saveAppEventHandler: function () {
+      appFormSave: function () {
         appService.save(this.appointment, this.closeEventHandler, this.errorResponse)
       },
-      /** VUEW Action handler **/
-      callAppEventHandler: function () {
+      /*********************************************************************************************
+       *                               component VIEW action handlers                              *
+       ********************************************************************************************/
+      viewCallApp: function () {
         this.appointment.phoneConfirm = !this.appointment.phoneConfirm
         appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
       },
-      closeAppEventHandler: function () {
+      viewCloseApp: function () {
         this.state = appState.FLOW.CLOSE
       },
-      editAppEventHandler: function () {
+      viewEditApp: function () {
         this.state = appState.FLOW.APP
       },
-      issueAppEventHandler: function () {
+      viewIssueApp: function () {
         this.mod = appState.MOD.ISSUE
         personService.findAllByClientId(this.client.id, persons => { this.persons = persons })
         this.state = (this.client.direction === null) ? appState.FLOW.NEW : appState.FLOW.CHOOSE_PERSON
       },
-      openAppEventHandler: function () {
+      viewOpenApp: function () {
         this.appointment.state = appState.APP.NEW
         appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
       },
-      closeAppByReasonEventHandler: function (reason) {
+      viewCloseAppByReason: function (reason) {
         this.appointment.state = appState.APP.CLOSE
         appReasonService.create(reason, () => {}, this.errorResponse)
         appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
       },
-      newPersonEventHandler: function (isClient) {
-        this.person = personService.getEmpty()
+      /*********************************************************************************************
+       *                        component CLOSE_REASON action handlers                             *
+       ********************************************************************************************/
+      chPersonNewPerson: function (isClient) {
+        this.person = personService.getEmpty(this.client.id, isClient)
         if (isClient) {
           this.person.name = this.client.name
           this.person.gender = this.client.gender
@@ -188,11 +201,15 @@
         }
         this.state = appState.FLOW.NEW_PERSON
       },
-      chosenPersonEventHandler: function (person) {
+      chPersonChoose: function (person) {
         this.person = person
+        this.state = appState.FLOW.DIAGNOSIS
       },
-      savePersonEventHandler: function () {
-        personService.save(this.person, () => { this.state = appState.FLOW.SERVICE }, this.errorResponse)
+      personFormSave: function () {
+        personService.save(this.person, () => { this.state = appState.FLOW.DIAGNOSIS }, this.errorResponse)
+      },
+      diagnosisSave: function () {
+        //
       },
       errorResponse: function (err) {
         console.log(err)
@@ -204,7 +221,8 @@
       'client-form': ClientForm,
       'reason-form': CloseReason,
       'choose-person': ChoosePerson,
-      'person-form': PersonForm
+      'person-form': PersonForm,
+      'diagnosis': Diagnosis
     },
     mounted () {
       bus.$on('appointment-modal-close', this.closeEventHandler)

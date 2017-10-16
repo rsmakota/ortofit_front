@@ -7,6 +7,7 @@ import reason from './modules/reason'
 import service from './modules/service'
 import clientDirection from './modules/clientDirection'
 import familyStatus from './modules/familyStatus'
+import insoleType from './modules/insoleType'
 
 Vue.use(Vuex)
 
@@ -36,7 +37,8 @@ const store = new Vuex.Store({
     service,
     clientDirection,
     reason,
-    familyStatus
+    familyStatus,
+    insoleType
   },
   actions: {
     loadData ({ state, getters, commit, dispatch }) {
@@ -46,6 +48,7 @@ const store = new Vuex.Store({
       dispatch('service/loadServices', state.empty)
       dispatch('clientDirection/loadClientDirections', state.empty)
       dispatch('familyStatus/loadFamilyStatuses', state.empty)
+      dispatch('insoleTypes/loadInsoleTypes', state.empty)
     }
   },
   plugins: [createPersistedState({paths: ['auth', 'officeId']})]

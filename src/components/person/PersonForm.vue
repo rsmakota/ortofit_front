@@ -103,7 +103,7 @@
         return (!this.nameErr && !this.genderErr && !this.familyStatusErr && !this.bornErr)
       },
       elClick (field) {
-        this['field'] = false
+        this[field] = false
       }
     },
     components: {

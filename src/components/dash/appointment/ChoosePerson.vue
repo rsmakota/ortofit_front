@@ -50,11 +50,11 @@
     },
     methods: {
       chooseClient () {
-        for (let person in this.persons) {
-          if (person.isClient) {
-            this.choosePerson(person)
-            return
-          }
+        let person = this.persons.find(p => p.isClient === true)
+        console.log(person)
+        if (person !== undefined) {
+          this.choosePerson(person)
+          return
         }
         this.newPerson(true)
       },
