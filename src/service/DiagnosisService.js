@@ -2,8 +2,8 @@ import Vue from 'vue'
 import AppProps from '../property'
 
 const DiagnosisService = {
-  create: function (person, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/diagnosis/', person)
+  create: function (diagnosis, callback, errHandler) {
+    Vue.http.post(AppProps.apiUrl + '/diagnosis/', diagnosis)
       .then(
         response => {
           callback(response.body)
@@ -13,8 +13,8 @@ const DiagnosisService = {
         }
       )
   },
-  update: function (person, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/diagnosis/', person)
+  update: function (diagnosis, callback, errHandler) {
+    Vue.http.put(AppProps.apiUrl + '/diagnosis/', diagnosis)
       .then(
         response => {
           callback(response.body)
@@ -24,12 +24,12 @@ const DiagnosisService = {
         }
       )
   },
-  save: function (person, callback, errHandler) {
-    if ('id' in person) {
-      this.update(person, callback, errHandler)
+  save: function (diagnosis, callback, errHandler) {
+    if ('id' in diagnosis) {
+      this.update(diagnosis, callback, errHandler)
       return
     }
-    this.create(person, callback, errHandler)
+    this.create(diagnosis, callback, errHandler)
   },
   findAllByPersonId: function (personId, callback, errHandler) {
     Vue.http.get(AppProps.apiUrl + '/diagnosis/person/' + personId)

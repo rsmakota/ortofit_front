@@ -48,7 +48,7 @@ const store = new Vuex.Store({
       dispatch('service/loadServices', state.empty)
       dispatch('clientDirection/loadClientDirections', state.empty)
       dispatch('familyStatus/loadFamilyStatuses', state.empty)
-      dispatch('insoleTypes/loadInsoleTypes', state.empty)
+      dispatch('insoleType/loadInsoleTypes', state.empty)
     }
   },
   plugins: [createPersistedState({paths: ['auth', 'officeId']})]

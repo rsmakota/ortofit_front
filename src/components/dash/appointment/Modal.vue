@@ -90,6 +90,7 @@
   import clientDirectionService from './../../../service/ClientDirectionService'
   import personService from './../../../service/PersonService'
   import familyStatusService from './../../../service/FamilyStatusService'
+  import diagnosisService from './../../../service/DiagnosisService'
 
   export default {
     data () {
@@ -203,13 +204,17 @@
       },
       chPersonChoose: function (person) {
         this.person = person
+        diagnosisService.findAllByPersonId(person.id, (diagnoses) => { this.diagnoses = diagnoses }, this.errorResponse)
         this.state = appState.FLOW.DIAGNOSIS
       },
       personFormSave: function () {
         personService.save(this.person, () => { this.state = appState.FLOW.DIAGNOSIS }, this.errorResponse)
       },
-      diagnosisSave: function () {
-        //
+      diagnosisSave: function (diagnosis) {
+        if (diagnosis !== null) {
+          diagnosisService.create(diagnosis, () => {}, this.errorResponse)
+        }
+        this.state = appState.FLOW.SERVICE
       },
       errorResponse: function (err) {
         console.log(err)

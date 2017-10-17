@@ -14,7 +14,7 @@
         <div style="height: 300px; overflow-y: scroll;">
           <div style="padding: 5px" v-for="diagnosis in diagnoses">
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <strong><i class="fa fa-calendar icon20"></i>{{ diagnosis.created.format('DD/MM/YYYY') }} &nbsp;&nbsp;<i class="fa fa-clock-o icon20"></i>{{ diagnosis.created.format('HH:mm') }} </strong><br>{{ diagnosis.description }}</div>
+            <strong><i class="fa fa-calendar icon20"></i>{{ toDate(diagnosis.created) }} &nbsp;&nbsp;<i class="fa fa-clock-o icon20"></i>{{ toTime(diagnosis.created) }} </strong><br>{{ diagnosis.description }}</div>
         </div>
       </form>
     </div>
@@ -26,6 +26,7 @@
 
 <script>
   import InfoPanel from './InfoPanel'
+  import moment from 'moment'
 
   export default {
     props: ['appointment', 'office', 'client', 'diagnoses', 'person'],
@@ -36,8 +37,17 @@
     },
     methods: {
       save () {
-        console.log(this.person)
-//        this.$emit('save', this.description)
+        let diagnosis = null
+        if (this.description !== null) {
+          diagnosis = {personId: this.person.id, description: this.description}
+        }
+        this.$emit('save', diagnosis)
+      },
+      toDate (timestamp) {
+        return moment(timestamp).format('DD/MM/YYYY')
+      },
+      toTime (timestamp) {
+        return moment(timestamp).format('HH:mm')
       }
     },
     components: {

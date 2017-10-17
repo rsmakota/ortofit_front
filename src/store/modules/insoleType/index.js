@@ -16,8 +16,8 @@ const getters = {
 // actions
 const actions = {
   loadInsoleTypes ({ commit }) {
-    service.loadAll(offices => {
-      commit('initInsoleTypes', offices)
+    service.loadAll(insoleTypes => {
+      commit('initInsoleTypes', insoleTypes)
     })
   }
 }
