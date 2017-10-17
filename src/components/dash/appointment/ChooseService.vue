@@ -11,32 +11,19 @@
               <th>Кол.</th>
             </tr>
             </thead>
-            {% for service in services %}
-            <tr class="tr-service">
-              {#<td><i class="fa fa-star-o icon20"> </i></td>#}
+            <tr class="tr-service" v-for="s in services">
+              <!--<td><i class="fa fa-star-o icon20"> </i></td>-->
               <td>
-                <input type="checkbox" id="service_{{ service.id }}" name="service_{{ service.id }}"
-                       value="{{ service.id }}" title="{{ service.name }}" class="chb-service"
-                       {% if service.id in storedServices %}
-                       checked
-                       {% endif %}
-                />
+                <input type="checkbox" v-model="service" title="{{ s.name }}" class="chb-service" />
               </td>
-              <td>{{ service.name }}</td>
+              <td>{{ s.name }}</td>
               <td>
-                <select id="serviceNum{{ service.id }}" name="serviceNum{{ service.id }}" size="1">
-                  {% for i in 1..4  %}
-                  <option value="{{ i }}"
-                          {% if (attribute(storedServicesNum, service.id) is defined) and (storedServicesNum[service.id] == i) %}
-                          selected
-                          {% endif %}
-                  >{{ i }}</option>
-                  {% endfor %}
+                <select size="1">
+                  <option>1</option>
+                  <option>2</option>
                 </select>
               </td>
             </tr>
-
-            {% endfor %}
           </table>
         </div>
         <div class="col-sm-5" style="padding-left: 0;">
@@ -50,32 +37,23 @@
             <tr>
               <td><i class="fa fa-hand-o-right icon20"></i></td>
               <td>Направил</td>
-              <td><input id="forwarder" name="forwarder" class="form-control pull-right active nes"
-                         type="text" placeholder="Врач"
-                         value="{{ app.forwarder }}"/></td>
+              <td><input class="form-control pull-right active nes"
+                         type="text" placeholder="Врач" v-model="appointment.forwarder"/></td>
             </tr>
             <tr>
               <td > <i class="fa fa-list-alt icon20"></i></td><td colspan="2"> Наличие направления
-              <input id="flyer" name="flyer" class="active nes"
-                     type="checkbox" style="position: absolute; right: 20px"
-                     value="1" {% if app.flyer %} checked {% endif %}/></td>
+              <input  class="active nes" v-model="appointment.flyer" type="checkbox" style="position: absolute; right: 20px"/></td>
             </tr>
 
             <tr>
               <td><i class="fa fa-bell-o icon20"></i></td>
               <td>Повтор</td>
-              <td><input id="remind" name="remind" class="form-control pull-right active nes" type="text"
-                         data-inputmask="'alias': 'dd/mm/yyyy'" data-mask
-                         placeholder="{{ "now"|date("d/m/Y") }}"
-                value=""/></td>
-            </tr>
-            <tr id="remindNotice" class="hidden">
-              <td colspan="3" style="color: red; text-align: center;">Введите корректно дату</td>
+              <td><date-picker v-model="remind" class="form-control pull-right active nes"></date-picker></td>
             </tr>
             <tr>
               <td colspan="3">
                 Комментарий к напоминанию
-                <textarea rows="6" id="description" name="description" class="form-control nes"
+                <textarea rows="6" v-model="remindDescriptor" class="form-control nes"
                           placeholder="Комментарий к напоминанию"></textarea>
               </td>
             </tr>
@@ -92,12 +70,17 @@
 
 <script>
   import InfoPanel from './InfoPanel'
+//  import moment from 'moment'
+  import 'bootstrap/dist/css/bootstrap.css'
+  import datePicker from 'vue-bootstrap-datetimepicker'
+  import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
 
   export default {
-    props: ['appointment', 'office', 'client', 'person'],
+    props: ['appointment', 'office', 'client', 'person', 'services'],
     data () {
       return {
-//        description: null
+        remind: null,
+        remindDescriptor: null
       }
     },
     methods: {
@@ -110,7 +93,8 @@
       }
     },
     components: {
-      'info-panel': InfoPanel
+      'info-panel': InfoPanel,
+      datePicker
     }
   }
 </script>
