@@ -6,7 +6,7 @@ const appState = {
     CLOSE: 'close',
     CHOOSE_PERSON: 'choose_person',
     NEW_PERSON: 'new_person',
-    SERVICE: 'service',
+    CHOOSE_SERVICE: 'service',
     DIAGNOSIS: 'diagnosis'
   },
   APP: {

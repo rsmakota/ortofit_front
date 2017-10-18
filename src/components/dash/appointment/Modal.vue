@@ -31,6 +31,7 @@
                    :clientDirection="clientDirection"
                    :personServices="personServices"
                    :appReasons="appReasons"
+                   :services="services"
                    @closeApp="viewCloseApp"
                    @editApp="viewEditApp"
                    @issueApp="viewIssueApp"
@@ -64,6 +65,15 @@
           :diagnoses="diagnoses"
           :person="person"
           @save="diagnosisSave"></diagnosis>
+        <choose-service v-if="(state === appState.FLOW.CHOOSE_SERVICE)"
+                        :appointment="appointment"
+                        :office="office"
+                        :personServices="personServices"
+                        :person="person"
+                        :preparedPersonServices="preparedPersonServices"
+                        @save="chooseServicesSave"
+        >
+        </choose-service>
       </div>
 
   </modal>
@@ -78,19 +88,20 @@
   import CloseReason from './CloseReason'
   import ChoosePerson from './ChoosePerson'
   import PersonForm from './../../person/PersonForm'
+  import ChooseService from './ChooseService'
   import Diagnosis from './Diagnosis'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
-  //  import reasonService from './../../../service/ReasonService'
   import clientService from './../../../service/ClientService'
   import officeService from './../../../service/OfficeService'
   import doctorService from './../../../service/DoctorService'
-  import serviceService from './../../../service/ServiceService'
+//  import serviceService from './../../../service/ServiceService'
   import appReasonService from './../../../service/AppointmentReasonService'
   import clientDirectionService from './../../../service/ClientDirectionService'
   import personService from './../../../service/PersonService'
   import familyStatusService from './../../../service/FamilyStatusService'
   import diagnosisService from './../../../service/DiagnosisService'
+  import personServiceService from './../../../service/PersonServiceService'
 
   export default {
     data () {
@@ -104,6 +115,7 @@
         service: null,
         appointment: null,
         personServices: null,
+        preparedPersonServices: null,
         clientDirection: null,
         persons: null,
         person: null,
@@ -133,7 +145,7 @@
         this.appointment = fullApp.appointment
         this.personServices = fullApp.personServices
         this.doctor = doctorService.getDoctorById(this.appointment.userId)
-        this.service = serviceService.getServiceById(this.appointment.serviceId)
+//        this.service = serviceService.getServiceById(this.appointment.serviceId)
         this.office = officeService.getOfficeById(this.appointment.officeId)
         this.clientDirection = clientDirectionService.findById(this.client.clientDirectionId)
       },
@@ -214,7 +226,13 @@
         if (diagnosis !== null) {
           diagnosisService.create(diagnosis, () => {}, this.errorResponse)
         }
-        this.state = appState.FLOW.SERVICE
+        personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
+        this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
+        this.state = appState.FLOW.CHOOSE_SERVICE
+        console.log(this.preparedPersonServices)
+      },
+      chooseServicesSave: function () {
+        personServiceService.saveGroup(this.preparedPersonServices, () => {}, this.errorResponse)
       },
       errorResponse: function (err) {
         console.log(err)
@@ -227,7 +245,8 @@
       'reason-form': CloseReason,
       'choose-person': ChoosePerson,
       'person-form': PersonForm,
-      'diagnosis': Diagnosis
+      'diagnosis': Diagnosis,
+      'choose-service': ChooseService
     },
     mounted () {
       bus.$on('appointment-modal-close', this.closeEventHandler)

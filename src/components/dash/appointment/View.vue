@@ -29,7 +29,7 @@
           <td><span v-if="service">{{ service.name }}</span></td>
           <td>
             <span v-if="personServices" v-for="personService in personServices">
-               <strong> {{ personService.service.shortName }} </strong> - {{ personService.number }}  &nbsp;&nbsp;&nbsp;
+               <strong> {{ getServiceName(personService.serviceId) }} </strong> - {{ personService.number }}  &nbsp;&nbsp;&nbsp;
             </span>
 
           </td>
@@ -112,7 +112,7 @@
   import moment from 'moment'
 
   export default {
-    props: ['appReasons', 'appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection'],
+    props: ['appReasons', 'appointment', 'client', 'service', 'personServices', 'appReminders', 'office', 'doctor', 'clientDirection', 'services'],
     data () {
       return {
         dateTime: null,
@@ -145,6 +145,11 @@
       getReason: function (reason) {
         let r = reasonService.getReasonById(reason.reasonId)
         return ' | ' + moment(reason.created).format('DD/MM/YYYY') + ' | Причина закрытия - ' + r.name
+      },
+      getServiceName (serviceId) {
+        //     return state.offices.find(office => office.id === id)
+        let service = this.services.find(service => service.id === serviceId)
+        return service.shortName
       }
     }
   }
