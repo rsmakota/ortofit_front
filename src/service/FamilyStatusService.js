@@ -1,6 +1,5 @@
 import store from '../store'
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const familyStatusService = {
   getAll: function () {
@@ -12,11 +11,8 @@ const familyStatusService = {
   getFamilyStatusClient: function () {
     return store.getters['familyStatus/getFamilyStatusByAlias']('self')
   },
-  loadAll: function (callback) {
-    Vue.http.get(AppProps.apiUrl + '/family_status/')
-      .then(response => {
-        callback(response.body)
-      })
+  loadAll: function (callback, errorHandler) {
+    client.get('/family_status/', callback, errorHandler)
   }
 }
 

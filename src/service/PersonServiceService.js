@@ -1,28 +1,11 @@
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const personServiceService = {
   create: function (pService, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/person_service/', pService)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.post('/person_service/', pService, callback, errHandler)
   },
   update: function (pService, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/person_service/', pService)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.put('/person_service/', pService, callback, errHandler)
   },
   save: function (pService, callback, errHandler) {
     if (('id' in pService) && (pService.id !== null)) {
@@ -32,35 +15,13 @@ const personServiceService = {
     this.create(pService, callback, errHandler)
   },
   findAllByPersonId: function (personId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/person_service/person/' + personId)
-      .then(
-        response => {
-          callback(((response.body) ? response.body : null))
-        },
-        response => {
-          errHandler(response.error)
-        })
+    client.get('/person_service/person/' + personId, callback, errHandler)
   },
   findByPersonIdAndAppId (personId, appId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/person_service/person_and_appointment/' + personId + '/' + appId)
-      .then(
-        response => {
-          callback(((response.body) ? response.body : null))
-        },
-        response => {
-          errHandler(response.error)
-        })
+    client.get('/person_service/person_and_appointment/' + personId + '/' + appId, callback, errHandler)
   },
-  remove: function (serviceId, callback, errHandler) {
-    Vue.http.delete(AppProps.apiUrl + '/person_service/', serviceId)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+  remove: function (service, callback, errHandler) {
+    client.delete('/person_service/', service, callback, errHandler)
   },
   getEmpty: function (clientId, personId, appointmentId) {
     return { id: null, clientId: clientId, personId: personId, appointmentId: appointmentId, serviceId: null, date: null, number: null }
@@ -85,10 +46,10 @@ const personServiceService = {
   saveGroup: function (group, callback, errHandler) {
     group.forEach((service, i, group) => {
       if (service.isChecked) {
-        this.save(service)
+        this.save(service, () => {}, errHandler)
       }
       if ((service.id !== null) && !service.isChecked) {
-        this.remove(service.id, () => {}, errHandler)
+        this.remove(service, () => {}, errHandler)
       }
     })
     callback()

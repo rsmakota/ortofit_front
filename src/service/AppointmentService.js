@@ -1,29 +1,14 @@
 import Vue from 'vue'
 import AppProps from '../property'
 import moment from 'moment'
+import client from './../apiClient'
 
 const appointmentService = {
   create: function (appointment, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/appointment/', appointment)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.post('/appointment/', appointment, callback, errHandler)
   },
   update: function (appointment, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/appointment/', appointment)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.put('/appointment/', appointment, callback, errHandler)
   },
   save: function (appointment, callback, errHandler) {
     if ('id' in appointment) {

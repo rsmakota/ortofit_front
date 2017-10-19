@@ -1,45 +1,21 @@
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const personService = {
   create: function (person, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/person/', person)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.post('/person/', person, callback, errHandler)
   },
   update: function (person, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/person/', person)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.put('/person/', person, callback, errHandler)
   },
   save: function (person, callback, errHandler) {
-    if ('id' in person) {
+    if (('id' in person) && (person.id !== null)) {
       this.update(person, callback, errHandler)
       return
     }
     this.create(person, callback, errHandler)
   },
   findAllByClientId: function (clientId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/person/client_id/' + clientId)
-      .then(
-        response => {
-          callback(((response.body) ? response.body : null))
-        },
-        response => {
-          errHandler(response.error)
-        })
+    client.get('/person/client_id/' + clientId, callback, errHandler)
   },
   getEmpty: function (clientId, isClient) {
     return {id: null, clientId: clientId, name: null, gender: null, familyStatus: null, born: null, isClient: isClient}

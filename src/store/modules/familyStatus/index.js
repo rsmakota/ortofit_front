@@ -19,7 +19,7 @@ const actions = {
   loadFamilyStatuses ({ commit }) {
     service.loadAll(familyStatuses => {
       commit('initFamilyStatuses', familyStatuses)
-    })
+    }, () => {})
   }
 }
 

@@ -1,24 +1,11 @@
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const appReasonService = {
   create: function (appReason, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/appointment_reason/', appReason)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.post('/appointment_reason/', appReason, callback, errHandler)
   },
   findAllByAppId: function (appId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/appointment_reason/appointment/' + appId)
-      .then(
-        response => {
-          callback(((response.body) ? response.body : null))
-        })
+    client.get('/appointment_reason/appointment/' + appId, callback, errHandler)
   }
 }
 

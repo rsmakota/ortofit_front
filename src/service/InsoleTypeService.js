@@ -1,6 +1,5 @@
 import store from '../store'
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const insoleTypeService = {
   getAll: function () {
@@ -9,11 +8,8 @@ const insoleTypeService = {
   getInsoleTypeById: function (id) {
     return store.getters['insoleType/getInsoleTypeById'](id)
   },
-  loadAll: function (callback) {
-    Vue.http.get(AppProps.apiUrl + '/insole_type/')
-      .then(response => {
-        callback(response.body)
-      })
+  loadAll: function (callback, errorHandler) {
+    client.get('/insole_type/', callback, errorHandler)
   }
 }
 

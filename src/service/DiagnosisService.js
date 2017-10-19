@@ -1,45 +1,21 @@
-import Vue from 'vue'
-import AppProps from '../property'
+import client from './../apiClient'
 
 const DiagnosisService = {
   create: function (diagnosis, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + '/diagnosis/', diagnosis)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.post('/diagnosis/', diagnosis, callback, errHandler)
   },
   update: function (diagnosis, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + '/diagnosis/', diagnosis)
-      .then(
-        response => {
-          callback(response.body)
-        },
-        response => {
-          errHandler(response.error)
-        }
-      )
+    client.put('/diagnosis/', diagnosis, callback, errHandler)
   },
   save: function (diagnosis, callback, errHandler) {
-    if ('id' in diagnosis) {
+    if (('id' in diagnosis) && (diagnosis.id !== null)) {
       this.update(diagnosis, callback, errHandler)
       return
     }
     this.create(diagnosis, callback, errHandler)
   },
   findAllByPersonId: function (personId, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + '/diagnosis/person/' + personId)
-      .then(
-        response => {
-          callback(((response.body) ? response.body : null))
-        },
-        response => {
-          errHandler(response.error)
-        })
+    client.get('/diagnosis/person/' + personId, callback, errHandler)
   },
   getEmpty: function (personId) {
     return { id: null, personId: personId, description: null }

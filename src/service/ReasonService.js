@@ -1,4 +1,5 @@
 import store from '../store'
+import client from './../apiClient'
 
 const reasonService = {
   getAll: function () {
@@ -6,6 +7,9 @@ const reasonService = {
   },
   getReasonById: function (id) {
     return store.getters['reason/getReasonById'](id)
+  },
+  loadAll: function (callback, errorHandler) {
+    client.get('/reason/', callback, errorHandler)
   }
 }
 

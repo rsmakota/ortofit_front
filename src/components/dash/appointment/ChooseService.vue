@@ -80,7 +80,7 @@
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
 
   export default {
-    props: ['appointment', 'office', 'person', 'preparedPersonServices'],
+    props: ['appointment', 'office', 'person', 'preparedPersonServices', 'personServices'],
     data () {
       return {
         remind: null,
@@ -93,7 +93,8 @@
         this.$emit('save')
       },
       merge (service) {
-        let ps = this.preparedPersonServices.find(ps => ps.serviceId === service.id)
+        let ps = this.preparedPersonServices.find(ps => ps.serviceId === service.serviceId)
+//        console.log('MERGE', ps)
         ps.isChecked = true
         ps.number = service.number
         ps.id = service.id
@@ -103,7 +104,7 @@
       'info-panel': InfoPanel,
       datePicker
     },
-    computed: {
+    watch: {
       personServices: function () {
         this.personServices.forEach(this.merge)
       }

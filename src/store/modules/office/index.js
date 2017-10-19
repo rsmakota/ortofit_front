@@ -1,7 +1,5 @@
-// import { bus } from './../../../components/event/bus'
 import service from './../../../service/OfficeService'
 
-// initial state
 const state = {
   officeId: null,
   offices: {}
@@ -17,14 +15,8 @@ const getters = {
 // actions
 const actions = {
   loadOffices ({ commit }) {
-    // Vue.http.get('office/')
-    //   .then(response => {
-    //     commit('initOffices', response.body)
-    //     bus.$emit('office-store-loaded')
-    //   })
     service.loadAll(offices => {
       commit('initOffices', offices)
-      // bus.$emit('office-store-loaded')
     })
   }
 }
@@ -33,7 +25,6 @@ const actions = {
 const mutations = {
   initOffices (state, data) {
     state.offices = data
-    console.log('LOAD OFFICES', data)
   }
 }
 

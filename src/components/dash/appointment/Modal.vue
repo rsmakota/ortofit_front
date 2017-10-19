@@ -170,7 +170,7 @@
         clientService.findByMsisdn(this.client.msisdn, this.setClient)
       },
       clientFormSave: function () {
-        clientService.save(this.client, this.setClient)
+        clientService.save(this.client, this.setClient, this.errorResponse)
       },
       appFormSave: function () {
         appService.save(this.appointment, this.closeEventHandler, this.errorResponse)
@@ -220,19 +220,25 @@
         this.state = appState.FLOW.DIAGNOSIS
       },
       personFormSave: function () {
-        personService.save(this.person, () => { this.state = appState.FLOW.DIAGNOSIS }, this.errorResponse)
+        personService.save(this.person, (person) => {
+          this.state = appState.FLOW.DIAGNOSIS
+          this.person = person
+        }, this.errorResponse)
       },
       diagnosisSave: function (diagnosis) {
         if (diagnosis !== null) {
           diagnosisService.create(diagnosis, () => {}, this.errorResponse)
         }
-        personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
+        this.loadPersonServices()
         this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
         this.state = appState.FLOW.CHOOSE_SERVICE
         console.log(this.preparedPersonServices)
       },
       chooseServicesSave: function () {
-        personServiceService.saveGroup(this.preparedPersonServices, () => {}, this.errorResponse)
+        personServiceService.saveGroup(this.preparedPersonServices, this.loadPersonServices, this.errorResponse)
+      },
+      loadPersonServices: function () {
+        personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
       },
       errorResponse: function (err) {
         console.log(err)

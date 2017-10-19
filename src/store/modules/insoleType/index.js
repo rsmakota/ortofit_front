@@ -18,7 +18,7 @@ const actions = {
   loadInsoleTypes ({ commit }) {
     service.loadAll(insoleTypes => {
       commit('initInsoleTypes', insoleTypes)
-    })
+    }, () => {})
   }
 }
 

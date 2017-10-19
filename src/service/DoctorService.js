@@ -1,4 +1,5 @@
 import store from '../store'
+import client from './../apiClient'
 
 const doctorService = {
   getDoctorName: function (id) {
@@ -12,6 +13,9 @@ const doctorService = {
   },
   getEmpty: function () {
     return {name: null, id: null}
+  },
+  loadAll: function (callback, errorHandler) {
+    client.get('/doctor/', callback, errorHandler)
   }
 }
 
