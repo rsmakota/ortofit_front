@@ -7,7 +7,10 @@ const appState = {
     CHOOSE_PERSON: 'choose_person',
     NEW_PERSON: 'new_person',
     CHOOSE_SERVICE: 'service',
-    DIAGNOSIS: 'diagnosis'
+    DIAGNOSIS: 'diagnosis',
+    INSOLE: 'insole',
+    MASSAGE: 'massage',
+    FINISH: 'finish'
   },
   APP: {
     NEW: 1,

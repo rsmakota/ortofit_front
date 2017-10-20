@@ -51,13 +51,13 @@
 
               <tr>
                 <td><i class="fa fa-bell-o icon20"></i></td>
-                <td><date-picker v-model="remind" class="form-control pull-right" :config="dtConf"></date-picker></td>
+                <td><date-picker v-model="remind.dateTime" class="form-control pull-right" :config="dtConf" v-if="remind"></date-picker></td>
                 <td>Повтор</td>
               </tr>
               <tr>
                 <td colspan="3">
                   Комментарий к напоминанию
-                  <textarea rows="6" v-model="remindDescriptor" class="form-control" placeholder="Комментарий к напоминанию"></textarea>
+                  <textarea rows="6" v-model="remind.description" class="form-control" placeholder="Комментарий к напоминанию" v-if="remind"></textarea>
                 </td>
               </tr>
               </tbody>
@@ -74,27 +74,29 @@
 
 <script>
   import InfoPanel from './InfoPanel'
-//  import moment from 'moment'
+  import moment from 'moment'
   import 'bootstrap/dist/css/bootstrap.css'
   import datePicker from 'vue-bootstrap-datetimepicker'
   import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
 
   export default {
-    props: ['appointment', 'office', 'person', 'preparedPersonServices', 'personServices'],
+    props: ['appointment', 'office', 'person', 'preparedPersonServices', 'personServices', 'remind'],
     data () {
       return {
-        remind: null,
-        remindDescriptor: null,
         dtConf: {format: 'DD/MM/YYYY', locale: 'ru'}
       }
     },
     methods: {
       save () {
+        this.remind.appointmentId = this.appointment.id
+        this.remind.personId = this.person.id
+        if (this.remind.description === null) {
+          this.remind.description = ''
+        }
         this.$emit('save')
       },
       merge (service) {
         let ps = this.preparedPersonServices.find(ps => ps.serviceId === service.serviceId)
-//        console.log('MERGE', ps)
         ps.isChecked = true
         ps.number = service.number
         ps.id = service.id
@@ -107,6 +109,11 @@
     watch: {
       personServices: function () {
         this.personServices.forEach(this.merge)
+      },
+      remind: function () {
+        if ((this.remind !== null) && !moment.isMoment(this.remind.dateTime)) {
+          this.remind.dateTime = moment(this.remind.dateTime)
+        }
       }
     }
   }

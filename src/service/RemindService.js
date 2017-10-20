@@ -18,8 +18,8 @@ const remindService = {
     apiClient.get('/remind/appointment/' + appId + '/person/' + personId, callback, errHandler)
   },
 
-  getEmpty: function (clientId, personId, appointmentId) {
-    return { id: null, personId: personId, appointmentId: appointmentId, dateTime: null, description: null }
+  getEmpty: function () {
+    return { id: null, personId: null, appointmentId: null, dateTime: null, description: null }
   }
 }
 

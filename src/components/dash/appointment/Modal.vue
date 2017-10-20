@@ -71,6 +71,7 @@
                         :personServices="personServices"
                         :person="person"
                         :preparedPersonServices="preparedPersonServices"
+                        :remind="remind"
                         @save="chooseServicesSave"
         >
         </choose-service>
@@ -80,6 +81,7 @@
 </template>
 
 <script>
+//  import moment from 'moment'
   import { mapGetters } from 'vuex'
   import appState from './AppointmentState'
   import ClientForm from './../../client/ClientForm'
@@ -102,6 +104,9 @@
   import familyStatusService from './../../../service/FamilyStatusService'
   import diagnosisService from './../../../service/DiagnosisService'
   import personServiceService from './../../../service/PersonServiceService'
+  import remindService from './../../../service/RemindService'
+//  import insoleService from './../../../service/InsoleService'
+// TODO: Sanitize of services
 
   export default {
     data () {
@@ -121,6 +126,9 @@
         person: null,
         appReasons: null,
         diagnoses: null,
+        remind: null,
+        insoles: null,
+        massages: null,
         mod: appState.MOD.EDIT,
         appState: appState
       }
@@ -134,10 +142,24 @@
         this.client = clientService.getEmpty()
         this.appointment = appService.getEmpty()
         this.doctor = doctorService.getEmpty()
+        this.clean()
         if (this.state === appState.FLOW.VIEW) {
           appService.findById(this.params.appointmentId, this.receiveFullApp)
           appReasonService.findAllByAppId(this.params.appointmentId, reasons => { this.appReasons = reasons }, this.errorResponse)
         }
+      },
+      clean () {
+        this.office = null
+        this.service = null
+        this.personServices = null
+        this.preparedPersonServices = null
+        this.persons = null
+        this.person = null
+        this.appReasons = null
+        this.diagnoses = null
+        this.remind = null
+        this.insoles = null
+        this.massages = null
       },
       receiveFullApp: function (fullApp) {
         this.client = fullApp.client
@@ -232,16 +254,33 @@
         this.loadPersonServices()
         this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
         this.state = appState.FLOW.CHOOSE_SERVICE
-        console.log(this.preparedPersonServices)
+        remindService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (reminds) => {
+          this.remind = (reminds.length > 0) ? reminds[0] : remindService.getEmpty()
+        }, this.errorResponse)
       },
       chooseServicesSave: function () {
         personServiceService.saveGroup(this.preparedPersonServices, this.loadPersonServices, this.errorResponse)
+        if (this.remind.dateTime !== null) {
+          remindService.save(this.remind, () => {}, this.errorResponse)
+        }
+        appService.update(this.appointment, () => {}, this.errorResponse)
+        let insoleService = this.preparedPersonServices.find(pService => pService.service.alias === 'insoles_manufacturing')
+        if (insoleService.isChecked) {
+          this.state = appState.FLOW.INSOLE
+          return
+        }
+        let massage = this.preparedPersonServices.find(pService => pService.service.alias === 'massage')
+        if (massage.isChecked) {
+          this.state = appState.FLOW.MASSAGE
+          return
+        }
+        this.state = appState.FLOW.FINISH
       },
       loadPersonServices: function () {
         personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
       },
       errorResponse: function (err) {
-        console.log(err)
+        console.log('ERROR: ', err)
       }
     },
     components: {
