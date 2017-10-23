@@ -90,11 +90,11 @@
     methods: {
       btnSavePerson () {
 //        console.log(this['dtConf'])
-        if (this.sanitize()) {
+        if (this.sanitizeServer()) {
           this.$emit('save')
         }
       },
-      sanitize () {
+      sanitizeServer () {
         this.nameErr = ((this.person.name === null) || (this.person.name.length < 1))
         this.genderErr = (this.person === null)
         this.familyStatusErr = (this.person.familyStatus === null)

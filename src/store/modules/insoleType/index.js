@@ -1,4 +1,3 @@
-// import { bus } from './../../../components/event/bus'
 import service from './../../../service/InsoleTypeService'
 
 // initial state

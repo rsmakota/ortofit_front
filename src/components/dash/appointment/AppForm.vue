@@ -214,8 +214,8 @@
       }
     },
     mounted () {
-      this.date = (('dateTime' in this.app) && (this.app.dateTime instanceof moment)) ? this.app.dateTime : null
-      this.time = (('dateTime' in this.app) && (this.app.dateTime instanceof moment)) ? this.app.dateTime : null
+      this.date = (('dateTime' in this.app) && moment.isMoment(this.app.dateTime)) ? this.app.dateTime : null
+      this.time = (('dateTime' in this.app) && moment.isMoment(this.app.dateTime)) ? this.app.dateTime : null
     },
     components: {
       datePicker

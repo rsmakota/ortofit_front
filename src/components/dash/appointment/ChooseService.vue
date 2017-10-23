@@ -13,10 +13,10 @@
               </tr>
               </thead>
               <tbody>
-              <tr class="tr-service" v-for="s in preparedPersonServices">
+              <tr v-bind:class="{'danger': serviceErr}" v-for="s in preparedPersonServices">
                 <!--<td><i class="fa fa-star-o icon20"> </i></td>-->
                 <td>
-                  <input type="checkbox" v-model="s.isChecked" title="s.service.name" />
+                  <input type="checkbox" v-model="s.isChecked" :title="s.service.name" @click="serviceClick" />
                 </td>
                 <td>{{ s.service.name }}</td>
                 <td>
@@ -49,9 +49,9 @@
                 <input v-model="appointment.flyer" type="checkbox" style="position: absolute; right: 20px"/></td>
               </tr>
 
-              <tr>
+              <tr v-bind:class="{'danger': remindErr}">
                 <td><i class="fa fa-bell-o icon20"></i></td>
-                <td><date-picker v-model="remind.dateTime" class="form-control pull-right" :config="dtConf" v-if="remind"></date-picker></td>
+                <td><date-picker v-model="remind.dateTime" class="form-control pull-right" :config="dtConf" v-if="remind" @click="remindClick"></date-picker></td>
                 <td>Повтор</td>
               </tr>
               <tr>
@@ -83,11 +83,37 @@
     props: ['appointment', 'office', 'person', 'preparedPersonServices', 'personServices', 'remind'],
     data () {
       return {
-        dtConf: {format: 'DD/MM/YYYY', locale: 'ru'}
+        dtConf: {format: 'DD/MM/YYYY', locale: 'ru'},
+        serviceErr: false,
+        remindErr: false
       }
     },
     methods: {
+      serviceClick () {
+        this.serviceErr = false
+      },
+      remindClick () {
+        this.remindErr = false
+      },
+      sanitizeServer () {
+        let ps = this.preparedPersonServices.find(ps => ps.isChecked === true)
+        if (ps !== undefined) {
+          return true
+        }
+        this.serviceErr = true
+      },
+      sanitizeRemind () {
+        let now = moment()
+        if (moment.isMoment(this.remind.dateTime) && (this.remind.dateTime < now)) {
+          this.remindErr = true
+          return false
+        }
+        return true
+      },
       save () {
+        if (!this.sanitizeServer() || !this.sanitizeRemind()) {
+          return
+        }
         this.remind.appointmentId = this.appointment.id
         this.remind.personId = this.person.id
         if (this.remind.description === null) {
@@ -97,6 +123,9 @@
       },
       merge (service) {
         let ps = this.preparedPersonServices.find(ps => ps.serviceId === service.serviceId)
+        if (ps === undefined) {
+          return
+        }
         ps.isChecked = true
         ps.number = service.number
         ps.id = service.id

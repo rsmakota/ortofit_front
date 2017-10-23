@@ -59,12 +59,12 @@
                      @save="personFormSave">
         </person-form>
         <diagnosis v-if="(state === appState.FLOW.DIAGNOSIS)"
-          :appointment="appointment"
-          :office="office"
-          :client="client"
-          :diagnoses="diagnoses"
-          :person="person"
-          @save="diagnosisSave"></diagnosis>
+                   :appointment="appointment"
+                   :office="office"
+                   :client="client"
+                   :diagnoses="diagnoses"
+                   :person="person"
+                   @save="diagnosisSave"></diagnosis>
         <choose-service v-if="(state === appState.FLOW.CHOOSE_SERVICE)"
                         :appointment="appointment"
                         :office="office"
@@ -75,13 +75,25 @@
                         @save="chooseServicesSave"
         >
         </choose-service>
+        <insole v-if="(state === appState.FLOW.INSOLE)"
+                :appointment="appointment"
+                :office="office"
+                :person="person"
+                :insoleTypes="insoleTypes"
+                :preparedInsoles="preparedInsoles"
+                :save="insoleSave"
+        ></insole>
+        <rewind v-if="(state === appState.FLOW.REWIND)"
+                @rewind="rewindRewind"
+                @finish="rewindFinish"
+        ></rewind>
       </div>
 
   </modal>
 </template>
 
 <script>
-//  import moment from 'moment'
+  import moment from 'moment'
   import { mapGetters } from 'vuex'
   import appState from './AppointmentState'
   import ClientForm from './../../client/ClientForm'
@@ -92,6 +104,8 @@
   import PersonForm from './../../person/PersonForm'
   import ChooseService from './ChooseService'
   import Diagnosis from './Diagnosis'
+  import Insole from './Insole'
+  import Rewind from './Rewind'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   import clientService from './../../../service/ClientService'
@@ -105,7 +119,7 @@
   import diagnosisService from './../../../service/DiagnosisService'
   import personServiceService from './../../../service/PersonServiceService'
   import remindService from './../../../service/RemindService'
-//  import insoleService from './../../../service/InsoleService'
+  import insoleService from './../../../service/InsoleService'
 // TODO: Sanitize of services
 
   export default {
@@ -129,6 +143,8 @@
         remind: null,
         insoles: null,
         massages: null,
+        preparedInsoles: null,
+        preparedMassages: null,
         mod: appState.MOD.EDIT,
         appState: appState
       }
@@ -160,6 +176,8 @@
         this.remind = null
         this.insoles = null
         this.massages = null
+        this.preparedInsoles = null
+        this.preparedMassages = null
       },
       receiveFullApp: function (fullApp) {
         this.client = fullApp.client
@@ -260,24 +278,35 @@
       },
       chooseServicesSave: function () {
         personServiceService.saveGroup(this.preparedPersonServices, this.loadPersonServices, this.errorResponse)
-        if (this.remind.dateTime !== null) {
+        if (moment.isMoment(this.remind.dateTime)) {
           remindService.save(this.remind, () => {}, this.errorResponse)
         }
         appService.update(this.appointment, () => {}, this.errorResponse)
-        let insoleService = this.preparedPersonServices.find(pService => pService.service.alias === 'insoles_manufacturing')
-        if (insoleService.isChecked) {
+        let insolePersonService = this.preparedPersonServices.find(pService => pService.service.alias === 'insoles_manufacturing')
+        if (insolePersonService.isChecked) {
+          this.preparedInsoles = insoleService.getPreparedInsoles(this.appointment.id, this.person.id, insolePersonService.number)
           this.state = appState.FLOW.INSOLE
           return
         }
-        let massage = this.preparedPersonServices.find(pService => pService.service.alias === 'massage')
-        if (massage.isChecked) {
-          this.state = appState.FLOW.MASSAGE
-          return
-        }
-        this.state = appState.FLOW.FINISH
+//        let massage = this.preparedPersonServices.find(pService => pService.service.alias === 'massage')
+//        if (massage.isChecked) {
+//          this.state = appState.FLOW.MASSAGE
+//          return
+//        }
+        this.state = appState.FLOW.REWIND
       },
       loadPersonServices: function () {
         personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
+      },
+      insoleSave: function () {
+        insoleService.saveGroup(this.preparedInsoles, () => {}, this.errorResponse)
+        this.state = appState.FLOW.REWIND
+      },
+      rewindRewind: function () {
+        //
+      },
+      rewindFinish: function () {
+        //
       },
       errorResponse: function (err) {
         console.log('ERROR: ', err)
@@ -291,7 +320,9 @@
       'choose-person': ChoosePerson,
       'person-form': PersonForm,
       'diagnosis': Diagnosis,
-      'choose-service': ChooseService
+      'choose-service': ChooseService,
+      'insole': Insole,
+      'rewind': Rewind
     },
     mounted () {
       bus.$on('appointment-modal-close', this.closeEventHandler)
@@ -302,7 +333,8 @@
         offices: 'office/getAll',
         services: 'service/getAll',
         reasons: 'reason/getAll',
-        familyStatuses: 'familyStatus/getAll'
+        familyStatuses: 'familyStatus/getAll',
+        insoleTypes: 'insoleType/getAll'
       })
     }
   }
