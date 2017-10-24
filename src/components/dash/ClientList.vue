@@ -83,11 +83,35 @@ paginator
     data () {
       return {
         msisdn: null,
-        clients: []
+        clients: [],
+        first: null,
+        last: false,
+        number: 0,
+        numberOfElements: 20,
+        size: 20,
+        sort: null,
+        totalElements: 0,
+        totalPages: 0
+      }
+    },
+    methods: {
+      errorHandler (err) {
+        console.log(err)
       }
     },
     mounted () {
-      clientService.findAll()
+      clientService.findAll(1, (response) => {
+        console.log('CONTENT', response.content)
+        this.clients = response.content
+        this.first = response.first
+        this.last = response.last
+        this.number = response.number
+        this.numberOfElements = response.numberOfElements
+        this.size = response.size
+        this.sort = response.sort
+        this.totalElements = response.totalElements
+        this.totalPages = response.totalPages
+      }, this.errorHandler)
     }
   }
 </script>

@@ -2,6 +2,17 @@ import Vue from 'vue'
 import AppProps from '../property'
 
 const apiClient = {
+  getRaw: function (uri, callback, errHandler) {
+    Vue.http.get(AppProps.apiUrl + uri)
+      .then(
+        response => {
+          console.log('Response', response)
+          callback(response)
+        },
+        response => {
+          errHandler(response.error)
+        })
+  },
   get: function (uri, callback, errHandler) {
     Vue.http.get(AppProps.apiUrl + uri)
       .then(
