@@ -7,11 +7,11 @@
           <thead><tr> <th>Размер</th> <th>Тип</th></tr></thead>
 
           <tbody>
-          <tr v-for="insole in preparedInsoles" v-bind:class="{'danger': insoleErr && ((insole.size === null) || (insole.typeId === null) )}">
-            <td>
+          <tr v-for="insole in preparedInsoles">
+            <td v-bind:class="{'danger': insoleErr && (!insole.size)}">
               <input type="number" placeholder="размер" class="form-control insole-size" title="Размер" min="15" max="60" size="5" v-model="insole.size" >
             </td>
-            <td>
+            <td v-bind:class="{'danger': insoleErr && (!insole.typeId)}">
               <select class="form-control insole-type" title="Тип" v-model="insole.typeId">
                 <option value="null" disabled>Выберите тип</option>
                 <option v-for="insoleType in insoleTypes" v-bind:value="insoleType.id">{{ insoleType.name }}</option>
@@ -41,16 +41,19 @@
     },
     methods: {
       sanitize () {
+        this.insoleErr = false
         this.preparedInsoles.forEach(insole => {
-          if ((insole.size === null) || (insole.typeId === null)) {
+          if (!insole.size || !insole.typeId) {
             this.insoleErr = true
           }
         })
+        return !this.insoleErr
       },
       save () {
         if (!this.sanitize()) {
           return
         }
+        this.$emit('save')
       }
     },
     components: {

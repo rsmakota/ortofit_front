@@ -7,7 +7,7 @@
           <div class="col-sm-7">
             <table class="table table-striped">
               <thead>
-              <tr>
+              <tr style="text-align: center">
                 <th colspan="2">Оказанные услуги:</th>
                 <th>Кол.</th>
               </tr>
@@ -25,6 +25,7 @@
                     <option>2</option>
                     <option>3</option>
                     <option>4</option>
+                    <option>5</option>
                   </select>
                 </td>
               </tr>
@@ -67,7 +68,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-success" @click="save">Оформить</button>
+      <button type="button" class="btn btn-success" @click="save">Далее</button>
     </div>
   </div>
 </template>
@@ -140,7 +141,7 @@
         this.personServices.forEach(this.merge)
       },
       remind: function () {
-        if ((this.remind !== null) && !moment.isMoment(this.remind.dateTime)) {
+        if ((this.remind.dateTime !== null) && !moment.isMoment(this.remind.dateTime)) {
           this.remind.dateTime = moment(this.remind.dateTime)
         }
       }

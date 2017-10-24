@@ -1,3 +1,93 @@
 <template>
-  <h1>HELLO</h1>
+  <section class="content">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box box-primary">
+          <div class="box-header">
+            <form action="">
+              <div class="box-tools">
+                <div class="input-group" style="width: 200px;">
+                  <input class="form-control input-sm pull-right" type="text" placeholder="телефон"
+                         name="msisdn" v-model="msisdn">
+                  <div class="input-group-btn">
+                    <button class="btn btn-sm btn-default">
+                      <i class="fa fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="box-body no-padding">
+            <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+              <div class="row">
+                <div class="col-sm-12">
+                  <table class="table table-bordered table-striped dataTable" role="grid"
+                         aria-describedby="example1_info" id="clientTable">
+                    <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Пол</th>
+                      <th>Имя</th>
+                      <th>Телефон</th>
+                      <th>Источник</th>
+                      <th>Стал клиентом</th>
+                      <th>Человек</th>
+                      <th> -</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="client in clients">
+                      <td>{{ client.id }}</td>
+                      <td>
+                        {% if client.gender == 'male' %}
+                        <i v-bind:class="{'fa-mars': (client.gender == 'male'), 'fa-venus': (client.gender == 'female')}" class="fa"></i>
+                      </td>
+                      <td>
+                        <a href="#"> {{ client.name }} </a>
+                      </td>
+                      <td>{{ client.msisdn }}</td>
+                      <td>{{ client.directionId }}</td>
+                      <td>{{ client.created }}</td>
+                      <td>count persons</td>
+                      <td><i class="fa fa-pencil edit" style="cursor: pointer;"></i></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="box-footer">
+            <div class="row">
+              <div class="col-sm-2">
+                <button type="button" class="btn btn-primary" id="newClient">Новый клиент</button>
+              </div>
+              <div class="col-sm-10">
+paginator
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
+
+<script>
+  import clientService from './../../service/ClientService'
+
+  export default {
+    data () {
+      return {
+        msisdn: null,
+        clients: []
+      }
+    },
+    mounted () {
+      clientService.findAll()
+    }
+  }
+</script>

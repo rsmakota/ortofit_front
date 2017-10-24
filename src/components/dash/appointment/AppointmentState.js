@@ -10,7 +10,8 @@ const appState = {
     DIAGNOSIS: 'diagnosis',
     INSOLE: 'insole',
     MASSAGE: 'massage',
-    REWIND: 'rewind'
+    REWIND: 'rewind',
+    ERROR: 'error'
   },
   APP: {
     NEW: 1,

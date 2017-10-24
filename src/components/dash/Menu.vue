@@ -23,7 +23,7 @@
 
 
       <li class="pageLink" v-bind:class="{'active': (activeMenu == 'clientList')}" v-on:click="openCloseMenu('clientList')">
-        <router-link to="/client_list" ><i class="fa fa-table"></i><span class="page">Tables</span></router-link>
+        <router-link to="/client_list" ><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
       </li>
 
       <!--<li class="header">ME</li>-->

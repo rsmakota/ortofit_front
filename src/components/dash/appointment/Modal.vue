@@ -1,5 +1,8 @@
 <template>
-  <modal name="appointment-modal" draggable=".modal-header" height="auto" @before-open="beforeOpenEventHandler" :pivotY="0.1" ref="modal">
+  <modal name="appointment-modal" draggable=".modal-header" height="auto"
+         @before-open="beforeOpenEventHandler"
+         @before-close="beforeClose"
+         :pivotY="0.1" ref="modal">
       <div class="modal-content">
         <div class="modal-header">
           <button class="close" type="button" @click="closeEventHandler"> <span>×</span></button>
@@ -81,12 +84,13 @@
                 :person="person"
                 :insoleTypes="insoleTypes"
                 :preparedInsoles="preparedInsoles"
-                :save="insoleSave"
+                @save="insoleSave"
         ></insole>
         <rewind v-if="(state === appState.FLOW.REWIND)"
                 @rewind="rewindRewind"
                 @finish="rewindFinish"
         ></rewind>
+        <error v-if="(state === appState.FLOW.ERROR)"></error>
       </div>
 
   </modal>
@@ -106,12 +110,12 @@
   import Diagnosis from './Diagnosis'
   import Insole from './Insole'
   import Rewind from './Rewind'
+  import Error from './Error'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   import clientService from './../../../service/ClientService'
   import officeService from './../../../service/OfficeService'
   import doctorService from './../../../service/DoctorService'
-//  import serviceService from './../../../service/ServiceService'
   import appReasonService from './../../../service/AppointmentReasonService'
   import clientDirectionService from './../../../service/ClientDirectionService'
   import personService from './../../../service/PersonService'
@@ -120,7 +124,6 @@
   import personServiceService from './../../../service/PersonServiceService'
   import remindService from './../../../service/RemindService'
   import insoleService from './../../../service/InsoleService'
-// TODO: Sanitize of services
 
   export default {
     data () {
@@ -164,6 +167,9 @@
           appReasonService.findAllByAppId(this.params.appointmentId, reasons => { this.appReasons = reasons }, this.errorResponse)
         }
       },
+      beforeClose () {
+        bus.$emit('appointment-schedule-refresh')
+      },
       clean () {
         this.office = null
         this.service = null
@@ -185,12 +191,17 @@
         this.appointment = fullApp.appointment
         this.personServices = fullApp.personServices
         this.doctor = doctorService.getDoctorById(this.appointment.userId)
-//        this.service = serviceService.getServiceById(this.appointment.serviceId)
         this.office = officeService.getOfficeById(this.appointment.officeId)
         this.clientDirection = clientDirectionService.findById(this.client.clientDirectionId)
       },
+      loadPersonServices: function () {
+        personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
+      },
+      errorResponse: function (err) {
+        this.state = appState.FLOW.ERROR
+        console.log('ERROR: ', err)
+      },
       closeEventHandler () {
-        bus.$emit('appointment-schedule-refresh')
         this.$modal.hide('appointment-modal')
       },
       clientFormComplete: function (client) {
@@ -230,17 +241,20 @@
       },
       viewIssueApp: function () {
         this.mod = appState.MOD.ISSUE
-        personService.findAllByClientId(this.client.id, persons => { this.persons = persons })
-        this.state = (this.client.direction === null) ? appState.FLOW.NEW : appState.FLOW.CHOOSE_PERSON
+        personService.findAllByClientId(this.client.id, persons => {
+          this.persons = persons
+          this.state = (this.client.direction === null) ? appState.FLOW.NEW : appState.FLOW.CHOOSE_PERSON
+        })
       },
       viewOpenApp: function () {
         this.appointment.state = appState.APP.NEW
-        appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
+        appService.update(this.appointment, () => { this.closeEventHandler() }, this.errorResponse)
       },
       viewCloseAppByReason: function (reason) {
         this.appointment.state = appState.APP.CLOSE
-        appReasonService.create(reason, () => {}, this.errorResponse)
-        appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
+        appReasonService.create(reason, () => {
+          appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
+        }, this.errorResponse)
       },
       /*********************************************************************************************
        *                        component CLOSE_REASON action handlers                             *
@@ -256,26 +270,40 @@
       },
       chPersonChoose: function (person) {
         this.person = person
-        diagnosisService.findAllByPersonId(person.id, (diagnoses) => { this.diagnoses = diagnoses }, this.errorResponse)
-        this.state = appState.FLOW.DIAGNOSIS
-      },
-      personFormSave: function () {
-        personService.save(this.person, (person) => {
+        diagnosisService.findAllByPersonId(person.id, (diagnoses) => {
+          this.diagnoses = diagnoses
           this.state = appState.FLOW.DIAGNOSIS
-          this.person = person
         }, this.errorResponse)
       },
+      /*********************************************************************************************
+       *                        component PERSON action handlers                                   *
+       ********************************************************************************************/
+      personFormSave: function () {
+        personService.save(this.person, (person) => {
+          this.person = person
+          this.state = appState.FLOW.DIAGNOSIS
+        }, this.errorResponse)
+      },
+      /*********************************************************************************************
+       *                        component DIAGNOSIS action handlers                                *
+       ********************************************************************************************/
       diagnosisSave: function (diagnosis) {
+        this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
         if (diagnosis !== null) {
-          diagnosisService.create(diagnosis, () => {}, this.errorResponse)
+          diagnosisService.create(diagnosis, () => {
+            this.state = appState.FLOW.CHOOSE_SERVICE
+          }, this.errorResponse)
+        } else {
+          this.state = appState.FLOW.CHOOSE_SERVICE
         }
         this.loadPersonServices()
-        this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
-        this.state = appState.FLOW.CHOOSE_SERVICE
         remindService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (reminds) => {
           this.remind = (reminds.length > 0) ? reminds[0] : remindService.getEmpty()
         }, this.errorResponse)
       },
+      /*********************************************************************************************
+       *                        component CHOOSE_SERVICE action handlers                           *
+       ********************************************************************************************/
       chooseServicesSave: function () {
         personServiceService.saveGroup(this.preparedPersonServices, this.loadPersonServices, this.errorResponse)
         if (moment.isMoment(this.remind.dateTime)) {
@@ -295,21 +323,33 @@
 //        }
         this.state = appState.FLOW.REWIND
       },
-      loadPersonServices: function () {
-        personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
-      },
+      /*********************************************************************************************
+       *                              component INSOLE action handlers                             *
+       ********************************************************************************************/
       insoleSave: function () {
-        insoleService.saveGroup(this.preparedInsoles, () => {}, this.errorResponse)
-        this.state = appState.FLOW.REWIND
+        insoleService.saveGroup(this.preparedInsoles, () => {
+          this.state = appState.FLOW.REWIND
+        }, this.errorResponse)
       },
+      /*********************************************************************************************
+       *                               component REWIND action handlers                            *
+       ********************************************************************************************/
       rewindRewind: function () {
-        //
+        this.preparedPersonServices = null
+        this.person = null
+        this.diagnoses = null
+        this.remind = null
+        this.insoles = null
+        this.massages = null
+        this.preparedInsoles = null
+        this.preparedMassages = null
+        this.state = appState.FLOW.CHOOSE_PERSON
       },
       rewindFinish: function () {
-        //
-      },
-      errorResponse: function (err) {
-        console.log('ERROR: ', err)
+        this.appointment.state = appState.APP.SUCCESS
+        appService.save(this.appointment, () => {
+          this.closeEventHandler()
+        }, this.errorResponse)
       }
     },
     components: {
@@ -322,11 +362,12 @@
       'diagnosis': Diagnosis,
       'choose-service': ChooseService,
       'insole': Insole,
-      'rewind': Rewind
+      'rewind': Rewind,
+      'error': Error
     },
-    mounted () {
-      bus.$on('appointment-modal-close', this.closeEventHandler)
-    },
+//    mounted () {
+//      bus.$on('appointment-modal-close', this.closeEventHandler)
+//    },
     computed: {
       ...mapGetters({
         doctors: 'doctor/getAll',
