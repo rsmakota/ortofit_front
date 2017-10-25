@@ -41,15 +41,14 @@
                     <tr v-for="client in clients">
                       <td>{{ client.id }}</td>
                       <td>
-                        {% if client.gender == 'male' %}
                         <i v-bind:class="{'fa-mars': (client.gender == 'male'), 'fa-venus': (client.gender == 'female')}" class="fa"></i>
                       </td>
                       <td>
                         <a href="#"> {{ client.name }} </a>
                       </td>
                       <td>{{ client.msisdn }}</td>
-                      <td>{{ client.directionId }}</td>
-                      <td>{{ client.created }}</td>
+                      <td>{{ getDirection(client.clientDirectionId) }}</td>
+                      <td>{{ getDate(client.created) }}</td>
                       <td>count persons</td>
                       <td><i class="fa fa-pencil edit" style="cursor: pointer;"></i></td>
                     </tr>
@@ -77,7 +76,9 @@ paginator
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import clientService from './../../service/ClientService'
+  import moment from 'moment'
 
   export default {
     data () {
@@ -97,11 +98,21 @@ paginator
     methods: {
       errorHandler (err) {
         console.log(err)
+      },
+      getDirection (directionId) {
+        console.log(directionId)
+        if (directionId && Array.isArray(this.clientDirections)) {
+          let direction = this.clientDirections.find(direction => direction.id === directionId)
+          return direction ? direction.name : 'неизвестно'
+        }
+        return null
+      },
+      getDate (timestamp) {
+        return moment(timestamp).format('DD/MM/YYYY')
       }
     },
     mounted () {
       clientService.findAll(1, (response) => {
-        console.log('CONTENT', response.content)
         this.clients = response.content
         this.first = response.first
         this.last = response.last
@@ -112,6 +123,16 @@ paginator
         this.totalElements = response.totalElements
         this.totalPages = response.totalPages
       }, this.errorHandler)
+    },
+    computed: {
+      ...mapGetters({
+//        doctors: 'doctor/getAll',
+//        offices: 'office/getAll',
+//        services: 'service/getAll',
+//        reasons: 'reason/getAll',
+//        familyStatuses: 'familyStatus/getAll',
+        clientDirections: 'clientDirection/getAll'
+      })
     }
   }
 </script>
