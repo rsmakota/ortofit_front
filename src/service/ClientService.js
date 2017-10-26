@@ -23,8 +23,9 @@ const clientService = {
   getEmpty: function () {
     return {id: null, name: null, gender: null, msisdn: null, clientDirectionId: null, countryId: 1}
   },
-  findAll: function (page, callback, errorHandler) {
-    apiClient.get('/client/list?sort=id&msisdn', callback, errorHandler)
+  findAll: function (params, callback, errorHandler) {
+    let query = '?' + params
+    apiClient.get('/client/list' + query, callback, errorHandler)
   }
 }
 

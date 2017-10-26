@@ -65,7 +65,7 @@
                 <button type="button" class="btn btn-primary" id="newClient">Новый клиент</button>
               </div>
               <div class="col-sm-10">
-paginator
+                <pagination @changePage="changePage" :pagination="paginationData" :config="paginationConfig"></pagination>
               </div>
             </div>
           </div>
@@ -79,6 +79,7 @@ paginator
   import { mapGetters } from 'vuex'
   import clientService from './../../service/ClientService'
   import moment from 'moment'
+  import pagination from './../pagination/Pagination'
 
   export default {
     data () {
@@ -90,9 +91,13 @@ paginator
         number: 0,
         numberOfElements: 20,
         size: 20,
-        sort: null,
+        sort: 'id',
         totalElements: 0,
-        totalPages: 0
+        totalPages: 0,
+        paginationData: {
+          first: true, last: false, number: 1, totalPages: 0, sort: null
+        },
+        paginationConfig: {totalElements: 20}
       }
     },
     methods: {
@@ -109,10 +114,13 @@ paginator
       },
       getDate (timestamp) {
         return moment(timestamp).format('DD/MM/YYYY')
+      },
+      changePage (pageNum) {
+        //
       }
     },
     mounted () {
-      clientService.findAll(1, (response) => {
+      clientService.findAll('sort=id&page=1', (response) => {
         this.clients = response.content
         this.first = response.first
         this.last = response.last
@@ -122,6 +130,7 @@ paginator
         this.sort = response.sort
         this.totalElements = response.totalElements
         this.totalPages = response.totalPages
+        this.paginationData = response
       }, this.errorHandler)
     },
     computed: {
@@ -133,6 +142,9 @@ paginator
 //        familyStatuses: 'familyStatus/getAll',
         clientDirections: 'clientDirection/getAll'
       })
+    },
+    components: {
+      pagination
     }
   }
 </script>
