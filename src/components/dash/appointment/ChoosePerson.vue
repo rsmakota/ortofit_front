@@ -51,7 +51,6 @@
     methods: {
       chooseClient () {
         let person = this.persons.find(p => p.isClient === true)
-        console.log(person)
         if (person !== undefined) {
           this.choosePerson(person)
           return
