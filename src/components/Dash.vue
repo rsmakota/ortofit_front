@@ -1,14 +1,12 @@
 <template>
   <div class="wrapper">
     <header class="main-header">
-      <a href="/" class="logo">
-        <!-- mini logo for sidebar mini 40x50 pixels -->
-        <span class="logo-mini"><img src="/static/img/logo_sm.png" alt="Logo" class="img-responsive center-block"></span>
+      <!-- Logo -->
+      <a href="javascript:;" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>O</b>ft</span>
         <!-- logo for regular state and mobile devices -->
-        <div class="container logo-lg">
-          <div class="pull-left image"><img src="/static/img/logo_sm.png" alt="Logo" class="img-responsive"></div>
-          <div class="pull-left info">CoPilot</div>
-        </div>
+        <span class="logo-lg"><b>Office</b>Ortofit</span>
       </a>
 
       <!-- Header Navbar -->
@@ -77,21 +75,10 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
-      <section class="content-header">
-        <h1>
-          <!--{{$route.name.toUpperCase() }}-->
-          <!--<small>{{ $route.meta.description }}</small>-->
-        </h1>
-        <ol class="breadcrumb">
-          <li><a href="javascript:;"><i class="fa fa-home"></i>Home</a></li>
-          <!--<li class="active">{{$route.name.toUpperCase() }}</li>-->
-        </ol>
-      </section>
+
 
       <router-view></router-view>
-    </div>
+
     <!-- /.content-wrapper -->
 
 
@@ -113,9 +100,7 @@
   export default {
     name: 'Dash',
     data () {
-      return {
-        msg: 'Welcome to Your Vue.js App'
-      }
+      return {}
     },
     methods: {
       appointmentModalShow: function () {

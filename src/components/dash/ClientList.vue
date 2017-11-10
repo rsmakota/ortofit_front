@@ -1,4 +1,15 @@
 <template>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Клиенты
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="javascript:;"><i class="fa fa-home"></i>Список клиентов</a></li>
+        <!--<li class="active">{{$route.name.toUpperCase() }}</li>-->
+      </ol>
+    </section>
   <section class="content">
 
     <div class="row">
@@ -33,7 +44,6 @@
                       <th>Телефон</th>
                       <th>Источник</th>
                       <th>Стал клиентом</th>
-                      <th>Человек</th>
                       <th> -</th>
                     </tr>
                     </thead>
@@ -49,8 +59,7 @@
                       <td>{{ client.msisdn }}</td>
                       <td>{{ getDirection(client.clientDirectionId) }}</td>
                       <td>{{ getDate(client.created) }}</td>
-                      <td>count persons</td>
-                      <td><i class="fa fa-pencil edit" style="cursor: pointer;"></i></td>
+                      <td><button type="button" class="btn btn-primary" @click="edit(client)"><i class="fa fa-pencil edit"></i> Изменить</button></td>
                     </tr>
                     </tbody>
                   </table>
@@ -62,7 +71,7 @@
           <div class="box-footer">
             <div class="row">
               <div class="col-sm-2">
-                <button type="button" class="btn btn-primary" id="newClient">Новый клиент</button>
+                <button type="button" class="btn btn-primary" @click="create">Новый клиент</button>
               </div>
               <div class="col-sm-10">
                 <pagination @changePage="changePage" :pagination="paginationData" :config="paginationConfig"></pagination>
@@ -73,6 +82,7 @@
       </div>
     </div>
   </section>
+  </div>
 </template>
 
 <script>
@@ -80,6 +90,7 @@
   import clientService from './../../service/ClientService'
   import moment from 'moment'
   import pagination from './../pagination/Pagination'
+//  import ClientModal from './../client/Modal'
 
   export default {
     data () {
@@ -95,7 +106,7 @@
         totalElements: 0,
         totalPages: 0,
         paginationData: {
-          first: true, last: false, number: 1, totalPages: 0, sort: null
+          first: true, last: false, number: 1, totalPages: 0
         },
         paginationConfig: {totalElements: 20}
       }
@@ -105,7 +116,6 @@
         console.log(err)
       },
       getDirection (directionId) {
-        console.log(directionId)
         if (directionId && Array.isArray(this.clientDirections)) {
           let direction = this.clientDirections.find(direction => direction.id === directionId)
           return direction ? direction.name : 'неизвестно'
@@ -116,6 +126,12 @@
         return moment(timestamp).format('DD/MM/YYYY')
       },
       changePage (pageNum) {
+        //
+      },
+      edit (client) {
+        //
+      },
+      create () {
         //
       }
     },

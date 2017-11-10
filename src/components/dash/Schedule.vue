@@ -1,24 +1,35 @@
 <template>
-  <!-- content -->
-  <section class="content">
-    <div class="row">
-      <div class="col-md-12">
-        <ul id="office_tabs" class="nav nav-tabs">
-          <li v-for="(office, index) in offices" v-bind:class="{'active': (office.id == currentOfficeId)}">
-            <a v-on:click="setOfficeId(office.id)" class="office_link">{{ office.name }}</a>
-          </li>
-        </ul>
-        <div class="box box-primary">
-          <div class="box-body no-padding">
-            <!-- THE CALENDAR -->
-            <full-calendar ref="calendar" :event-sources="eventSources" @event-selected="eventSelected"
-                           @event-created="eventCreated" :config="config"></full-calendar>
-          </div><!-- /.box-body -->
-        </div><!-- /. box -->
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </section><!-- /.content -->
-
+  <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <h1>
+          График приема
+        </h1>
+        <ol class="breadcrumb">
+          <li><a href="javascript:;"><i class="fa fa-home"></i>График приема</a></li>
+          <!--<li class="active">{{$route.name.toUpperCase() }}</li>-->
+        </ol>
+      </section>
+    <!-- content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <ul id="office_tabs" class="nav nav-tabs">
+            <li v-for="(office, index) in offices" v-bind:class="{'active': (office.id == currentOfficeId)}">
+              <a v-on:click="setOfficeId(office.id)" class="office_link">{{ office.name }}</a>
+            </li>
+          </ul>
+          <div class="box box-primary">
+            <div class="box-body no-padding">
+              <!-- THE CALENDAR -->
+              <full-calendar ref="calendar" :event-sources="eventSources" @event-selected="eventSelected"
+                             @event-created="eventCreated" :config="config"></full-calendar>
+            </div><!-- /.box-body -->
+          </div><!-- /. box -->
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </section><!-- /.content -->
+  </div>
 </template>
 
 <script>

@@ -99,7 +99,6 @@
         this.genderErr = (this.person === null)
         this.familyStatusErr = (this.person.familyStatus === null)
         this.bornErr = (this.person.born === null)
-        console.log(this.nameErr, this.genderErr, this.familyStatusErr, this.bornErr)
         return (!this.nameErr && !this.genderErr && !this.familyStatusErr && !this.bornErr)
       },
       elClick (field) {
