@@ -16,13 +16,13 @@
       <div class="col-md-12">
         <div class="box box-primary">
           <div class="box-header">
-            <form action="">
+            <form v-on:submit.prevent="onSubmit">
               <div class="box-tools">
                 <div class="input-group" style="width: 200px;">
                   <input class="form-control input-sm pull-right" type="text" placeholder="телефон"
-                         name="msisdn" v-model="msisdn">
+                         name="msisdn" v-model="request.msisdn">
                   <div class="input-group-btn">
-                    <button class="btn btn-sm btn-default">
+                    <button class="btn btn-sm btn-default" v-on:click="findByMsisdn">
                       <i class="fa fa-search"></i>
                     </button>
                   </div>
@@ -90,25 +90,22 @@
   import clientService from './../../service/ClientService'
   import moment from 'moment'
   import pagination from './../pagination/Pagination'
-//  import ClientModal from './../client/Modal'
 
   export default {
     data () {
       return {
         msisdn: null,
         clients: [],
-        first: null,
-        last: false,
-        number: 0,
-        numberOfElements: 20,
-        size: 20,
-        sort: 'id',
-        totalElements: 0,
-        totalPages: 0,
+        request: {
+          page: 0,
+          sort: ['id'],
+          size: 20,
+          msisdn: null
+        },
         paginationData: {
           first: true, last: false, number: 1, totalPages: 0
         },
-        paginationConfig: {totalElements: 20}
+        paginationConfig: {totalElements: 16}
       }
     },
     methods: {
@@ -125,29 +122,25 @@
       getDate (timestamp) {
         return moment(timestamp).format('DD/MM/YYYY')
       },
-      changePage (pageNum) {
-        //
+      changePage (num) {
+        console.log('Page num', num)
+        this.request.page = num
+        clientService.findAll(this.request, this.responseHandler, this.errorHandler)
       },
-      edit (client) {
-        //
+      responseHandler (response) {
+        this.clients = response.content
+        this.paginationData.first = response.first
+        this.paginationData.last = response.last
+        this.paginationData.number = response.number
+        this.paginationData.totalPages = response.totalPages
       },
-      create () {
-        //
+      findByMsisdn () {
+        clientService.findAll(this.request, this.responseHandler, this.errorHandler)
+        return false
       }
     },
     mounted () {
-      clientService.findAll('sort=id&page=1', (response) => {
-        this.clients = response.content
-        this.first = response.first
-        this.last = response.last
-        this.number = response.number
-        this.numberOfElements = response.numberOfElements
-        this.size = response.size
-        this.sort = response.sort
-        this.totalElements = response.totalElements
-        this.totalPages = response.totalPages
-        this.paginationData = response
-      }, this.errorHandler)
+      clientService.findAll(this.request, this.responseHandler, this.errorHandler)
     },
     computed: {
       ...mapGetters({

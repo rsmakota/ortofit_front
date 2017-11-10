@@ -1,26 +1,26 @@
 <template>
   <ul class="pagination" style="margin: auto">
-    <li id="previous" class="paginate_button previous" v-bind:class="{'disabled': pagination.first}">
-      <a href="#" :disabled="pagination.first">Previous</a>
+    <li id="previous" class="paginate_button previous" :class="{'disabled': pagination.first}">
+      <a href="javascript:void(0);" :disabled="pagination.first" @click="prev">Previous</a>
     </li>
 
-    <li class="paginate_button" v-if="start > 1">
-      <a href="" @click="changePage(1)">{{ 1 }}</a>
+    <li class="paginate_button" v-if="start > 0">
+      <a href="javascript:void(0);" @click="changePage(0)">{{ 1 }}</a>
     </li>
-    <li v-if="start > 1"><a href="#">...</a></li>
+    <li v-if="start > 0"><a href="#">...</a></li>
 
-    <li class="paginate_button" v-if="pagination.totalPages > 0" v-for="pageNum in pages" v-bind:class="{'active': (pageNum == pagination.number)}">
-      <a href="#" @click="changePage(pageNum)">{{ pageNum }}</a>
+    <li class="paginate_button" v-if="pagination.totalPages > 0" v-for="num in pages" :class="{'active': (num == pagination.number)}">
+      <a href="javascript:void(0);" @click="changePage(num)">{{ num + 1 }}</a>
     </li>
 
     <li v-if="end < pagination.totalPages"><a href="#">...</a></li>
     <li class="paginate_button" v-if="end < pagination.totalPages">
-      <a href="" @click="changePage(pagination.totalPages)">{{ pagination.totalPages }}</a>
+      <a href="javascript:void(0);" @click="changePage(pagination.totalPages - 1)">{{ pagination.totalPages }}</a>
     </li>
 
     <li id="next" class="paginate_button next" :class="{'disabled': pagination.last}">
       <span v-if="pagination.last">Next</span>
-      <a v-if="!pagination.last" href="#" @click="next">Next</a>
+      <a v-if="!pagination.last" href="javascript:void(0);" @click="next">Next</a>
     </li>
   </ul>
 </template>
@@ -31,7 +31,7 @@
       pagination: {
         type: Object,
         default: function () {
-          return {first: true, last: false, number: 1, totalPages: 0, sort: null}
+          return {first: true, last: false, number: 0, totalPages: 1}
         }
       },
       config: {
@@ -50,12 +50,15 @@
       },
       next () {
         this.changePage(this.pagination.number + 1)
+      },
+      prev () {
+        this.changePage(this.pagination.number - 1)
       }
     },
     computed: {
       start: function () {
         let start = this.pagination.number - Math.floor(this.config.totalElements / 2)
-        return (start < 1) ? 1 : start
+        return (start < 0) ? 0 : start
       },
       end: function () {
         let end = this.start + this.config.totalElements - 1
