@@ -107,7 +107,7 @@
 </template>
 <script>
 //  import moment from 'moment'
-  import appState from './AppointmentState'
+  import appState from './AppointmentConst'
   import reasonService from './../../../service/ReasonService'
   import moment from 'moment'
 

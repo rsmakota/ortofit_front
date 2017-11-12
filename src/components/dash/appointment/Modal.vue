@@ -13,7 +13,7 @@
                      @save="clientFormSave"
                      @findByMsisdn="clientFormFindByMsisdn"
                      :client="client"
-                     :mod="mod">
+                     :mod="clientFormMod">
 
         </client-form>
         <new-form v-if="(state === appState.FLOW.APP)" ref="new"
@@ -99,7 +99,8 @@
 <script>
   import moment from 'moment'
   import { mapGetters } from 'vuex'
-  import appState from './AppointmentState'
+  import APP_CONST from './AppointmentConst'
+  import CLIENT_CONST from './../../client/ClientConst'
   import ClientForm from './../../client/ClientForm'
   import New from './AppForm'
   import View from './View'
@@ -148,13 +149,14 @@
         massages: null,
         preparedInsoles: null,
         preparedMassages: null,
-        mod: appState.MOD.EDIT,
-        appState: appState
+        mod: APP_CONST.MOD.EDIT,
+        clientFormMod: CLIENT_CONST.FORM.MOD.SHORT,
+        appState: APP_CONST
       }
     },
     methods: {
       beforeOpenEventHandler (event) {
-        this.mod = appState.MOD.EDIT
+        this.mod = APP_CONST.MOD.EDIT
         this.title = event.params.title
         this.state = event.params.state
         this.params = event.params
@@ -162,7 +164,7 @@
         this.appointment = appService.getEmpty()
         this.doctor = doctorService.getEmpty()
         this.clean()
-        if (this.state === appState.FLOW.VIEW) {
+        if (this.state === APP_CONST.FLOW.VIEW) {
           appService.findById(this.params.appointmentId, this.receiveFullApp)
           appReasonService.findAllByAppId(this.params.appointmentId, reasons => { this.appReasons = reasons }, this.errorResponse)
         }
@@ -184,6 +186,7 @@
         this.massages = null
         this.preparedInsoles = null
         this.preparedMassages = null
+        this.clientFormMod = CLIENT_CONST.FORM.MOD.SHORT
       },
       receiveFullApp: function (fullApp) {
         this.client = fullApp.client
@@ -198,14 +201,14 @@
         personServiceService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (personServices) => { this.personServices = personServices }, this.errorResponse)
       },
       errorResponse: function (err) {
-        this.state = appState.FLOW.ERROR
+        this.state = APP_CONST.FLOW.ERROR
         console.log('ERROR: ', err)
       },
       closeEventHandler () {
         this.$modal.hide('appointment-modal')
       },
       clientFormComplete: function (client) {
-        this.state = (this.mod === appState.MOD.EDIT) ? appState.FLOW.APP : appState.FLOW.CHOOSE_PERSON
+        this.state = (this.mod === APP_CONST.MOD.EDIT) ? APP_CONST.FLOW.APP : APP_CONST.FLOW.CHOOSE_PERSON
         this.appointment.clientId = client.id
         this.appointment.userId = ('doctorId' in this.params) ? this.params.doctorId : null
         this.appointment.officeId = ('officeId' in this.params) ? this.params.officeId : null
@@ -234,24 +237,25 @@
         appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
       },
       viewCloseApp: function () {
-        this.state = appState.FLOW.CLOSE
+        this.state = APP_CONST.FLOW.CLOSE
       },
       viewEditApp: function () {
-        this.state = appState.FLOW.APP
+        this.state = APP_CONST.FLOW.APP
       },
       viewIssueApp: function () {
-        this.mod = appState.MOD.ISSUE
+        this.mod = APP_CONST.MOD.ISSUE
+        this.clientFormMod = CLIENT_CONST.FORM.MOD.ABSOLUTELY
         personService.findAllByClientId(this.client.id, persons => {
           this.persons = persons
-          this.state = (this.client.direction === null) ? appState.FLOW.NEW : appState.FLOW.CHOOSE_PERSON
+          this.state = (this.client.clientDirectionId === null) ? APP_CONST.FLOW.NEW : APP_CONST.FLOW.CHOOSE_PERSON
         })
       },
       viewOpenApp: function () {
-        this.appointment.state = appState.APP.NEW
+        this.appointment.state = APP_CONST.APP.NEW
         appService.update(this.appointment, () => { this.closeEventHandler() }, this.errorResponse)
       },
       viewCloseAppByReason: function (reason) {
-        this.appointment.state = appState.APP.CLOSE
+        this.appointment.state = APP_CONST.APP.CLOSE
         appReasonService.create(reason, () => {
           appService.update(this.appointment, this.closeEventHandler, this.errorResponse)
         }, this.errorResponse)
@@ -266,13 +270,13 @@
           this.person.gender = this.client.gender
           this.person.familyStatus = familyStatusService.getFamilyStatusClient()
         }
-        this.state = appState.FLOW.NEW_PERSON
+        this.state = APP_CONST.FLOW.NEW_PERSON
       },
       chPersonChoose: function (person) {
         this.person = person
         diagnosisService.findAllByPersonId(person.id, (diagnoses) => {
           this.diagnoses = diagnoses
-          this.state = appState.FLOW.DIAGNOSIS
+          this.state = APP_CONST.FLOW.DIAGNOSIS
         }, this.errorResponse)
       },
       /*********************************************************************************************
@@ -281,7 +285,7 @@
       personFormSave: function () {
         personService.save(this.person, (person) => {
           this.person = person
-          this.state = appState.FLOW.DIAGNOSIS
+          this.state = APP_CONST.FLOW.DIAGNOSIS
         }, this.errorResponse)
       },
       /*********************************************************************************************
@@ -291,10 +295,10 @@
         this.preparedPersonServices = personServiceService.getAllEmptyServices(this.services, this.appointment, this.client, this.person)
         if (diagnosis !== null) {
           diagnosisService.create(diagnosis, () => {
-            this.state = appState.FLOW.CHOOSE_SERVICE
+            this.state = APP_CONST.FLOW.CHOOSE_SERVICE
           }, this.errorResponse)
         } else {
-          this.state = appState.FLOW.CHOOSE_SERVICE
+          this.state = APP_CONST.FLOW.CHOOSE_SERVICE
         }
         this.loadPersonServices()
         remindService.findByPersonIdAndAppId(this.person.id, this.appointment.id, (reminds) => {
@@ -313,22 +317,22 @@
         let insolePersonService = this.preparedPersonServices.find(pService => pService.service.alias === 'insoles_manufacturing')
         if (insolePersonService.isChecked) {
           this.preparedInsoles = insoleService.getPreparedInsoles(this.appointment.id, this.person.id, insolePersonService.number)
-          this.state = appState.FLOW.INSOLE
+          this.state = APP_CONST.FLOW.INSOLE
           return
         }
 //        let massage = this.preparedPersonServices.find(pService => pService.service.alias === 'massage')
 //        if (massage.isChecked) {
-//          this.state = appState.FLOW.MASSAGE
+//          this.state = APP_CONST.FLOW.MASSAGE
 //          return
 //        }
-        this.state = appState.FLOW.REWIND
+        this.state = APP_CONST.FLOW.REWIND
       },
       /*********************************************************************************************
        *                              component INSOLE action handlers                             *
        ********************************************************************************************/
       insoleSave: function () {
         insoleService.saveGroup(this.preparedInsoles, () => {
-          this.state = appState.FLOW.REWIND
+          this.state = APP_CONST.FLOW.REWIND
         }, this.errorResponse)
       },
       /*********************************************************************************************
@@ -343,10 +347,10 @@
         this.massages = null
         this.preparedInsoles = null
         this.preparedMassages = null
-        this.state = appState.FLOW.CHOOSE_PERSON
+        this.state = APP_CONST.FLOW.CHOOSE_PERSON
       },
       rewindFinish: function () {
-        this.appointment.state = appState.APP.SUCCESS
+        this.appointment.state = APP_CONST.APP.SUCCESS
         appService.save(this.appointment, () => {
           this.closeEventHandler()
         }, this.errorResponse)

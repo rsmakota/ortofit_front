@@ -54,12 +54,12 @@
                         <i v-bind:class="{'fa-mars': (client.gender == 'male'), 'fa-venus': (client.gender == 'female')}" class="fa"></i>
                       </td>
                       <td>
-                        <a href="#"> {{ client.name }} </a>
+                        <router-link :to="{ name: 'ClientView', params: { id: client.id }}">{{ client.name }}</router-link>
                       </td>
                       <td>{{ client.msisdn }}</td>
                       <td>{{ getDirection(client.clientDirectionId) }}</td>
                       <td>{{ getDate(client.created) }}</td>
-                      <td><button type="button" class="btn btn-primary" @click="edit(client)"><i class="fa fa-pencil edit"></i> Изменить</button></td>
+                      <td><button type="button" class="btn btn-primary" @click="showModal(client)"><i class="fa fa-pencil edit"></i> Изменить</button></td>
                     </tr>
                     </tbody>
                   </table>
@@ -71,7 +71,7 @@
           <div class="box-footer">
             <div class="row">
               <div class="col-sm-2">
-                <button type="button" class="btn btn-primary" @click="create">Новый клиент</button>
+                <button type="button" class="btn btn-primary" @click="showModal(null)">Новый клиент</button>
               </div>
               <div class="col-sm-10">
                 <pagination @changePage="changePage" :pagination="paginationData" :config="paginationConfig"></pagination>
@@ -82,6 +82,7 @@
       </div>
     </div>
   </section>
+    <client-modal ></client-modal>
   </div>
 </template>
 
@@ -90,6 +91,8 @@
   import clientService from './../../service/ClientService'
   import moment from 'moment'
   import pagination from './../pagination/Pagination'
+  import ClientModal from './../client/Modal.vue'
+  import CLIENT_CONST from './../client/ClientConst'
 
   export default {
     data () {
@@ -123,7 +126,6 @@
         return moment(timestamp).format('DD/MM/YYYY')
       },
       changePage (num) {
-        console.log('Page num', num)
         this.request.page = num
         clientService.findAll(this.request, this.responseHandler, this.errorHandler)
       },
@@ -137,6 +139,9 @@
       findByMsisdn () {
         clientService.findAll(this.request, this.responseHandler, this.errorHandler)
         return false
+      },
+      showModal (client) {
+        this.$modal.show('client-modal', {title: 'Новый клиент', mod: CLIENT_CONST.FORM.MOD.ABSOLUTELY, time: moment(), client: client})
       }
     },
     mounted () {
@@ -153,7 +158,8 @@
       })
     },
     components: {
-      pagination
+      pagination,
+      'client-modal': ClientModal
     }
   }
 </script>

@@ -72,7 +72,7 @@
       <button type="button" class="btn btn-primary" v-on:click="btnSavePerson" :disabled="freeze" v-if="!isClientEditBlocked">
         Сохранить
       </button>
-      <button type="button" v-if="hasClient" class="btn btn-success" v-on:click="btnNext" :disabled="freeze">Далее >></button>
+      <button type="button" v-if="hasClient" class="btn btn-success" v-on:click="btnNext" :disabled="freeze || !isClientEditBlocked">Далее >></button>
     </div>
   </div>
 </template>
@@ -81,10 +81,10 @@
 <script>
   import maskedInput from 'vue-masked-input'
   import clientDirectionService from '../../service/ClientDirectionService'
-  import appState from './../dash/appointment/AppointmentState'
+  import CLIENT_CONST from './ClientConst'
 
   export default {
-    props: ['client', 'mode'],
+    props: ['client', 'mod'],
     data () {
       return {
         prefix: 38,
@@ -111,7 +111,7 @@
       },
       client: function () {
         this.hasClient = true
-        this.isClientEditBlocked = true
+        this.isClientEditBlocked = !((this.mod === CLIENT_CONST.FORM.MOD.ABSOLUTELY) && (this.client.clientDirectionId === null))
         this.freeze = false
       }
     },
@@ -153,7 +153,7 @@
     },
     computed: {
       hasDirectionEl: function () {
-        return this.mod === appState.MOD.ISSUE
+        return this.mod !== CLIENT_CONST.FORM.MOD.SHORT
       }
     }
   }

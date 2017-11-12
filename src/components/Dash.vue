@@ -94,7 +94,7 @@
 <script>
   import MainMenu from './dash/Menu.vue'
   import AppModal from './dash/appointment/Modal'
-  import AppState from './dash/appointment/AppointmentState'
+  import AppState from './dash/appointment/AppointmentConst'
   import moment from 'moment'
 
   export default {

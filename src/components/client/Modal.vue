@@ -21,22 +21,27 @@
 
 <script>
   import ClientForm from './ClientForm.vue'
-  import appState from './../dash/appointment/AppointmentState'
   import clientService from './../../service/ClientService'
+//  import clientConst from './ClientConst'
 
   export default {
     data () {
       return {
         state: null,
         params: null,
-        client: null
+        client: null,
+        mod: null
       }
     },
     methods: {
       beforeOpenEventHandler (event) {
-        this.mod = appState.MOD.EDIT
         this.params = event.params
-        this.client = clientService.getEmpty()
+        this.mod = this.params.mod
+        if (this.params.client) {
+          this.client = this.params.client
+        } else {
+          this.client = clientService.getEmpty()
+        }
       },
       clientFormFindByMsisdn: function () {
         clientService.findByMsisdn(this.client.msisdn, client => { this.client = client }, this.errorResponse)
@@ -49,6 +54,9 @@
       },
       errorResponse (err) {
         console.log(err)
+      },
+      closeEventHandler () {
+        this.$modal.hide('client-modal')
       }
     },
     components: {

@@ -35,7 +35,7 @@
 <script>
   import appProperty from './../../property'
   import { bus } from './../event/bus'
-  import appState from './appointment/AppointmentState'
+  import appState from './appointment/AppointmentConst'
   import { mapGetters } from 'vuex'
 
   export default {
