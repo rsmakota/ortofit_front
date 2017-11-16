@@ -24,7 +24,7 @@
               <ul class="list-group list-group-unbordered">
                 <li class="list-group-item">
                   <b>Клиент с:</b>
-                  <span class="pull-right"> client.created.format('d/m/Y') </span>
+                  <span class="pull-right"> {{ client.created }} </span>
                 </li>
                 <li class="list-group-item">
                   <b>Членов семьи:</b>
@@ -46,47 +46,30 @@
         </div>
         <div class="col-md-9">
           <div class="nav-tabs-custom">
-            <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">{% set activeClass = 'active' %}
-              {% for person in client.persons %}
-              <li class="{{ activeClass }}"><a data-toggle="tab" href="#{{ person.familyStatus.alias ~ person.id }}">{{ person.name }}</a></li>
-              {% set activeClass = '' %}
-              {% endfor %}
+            <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+              <li v-for="person in persons"><a href="#">{{ person.name }}</a></li>
             </ul>
             <div class="tab-content">
-
-              {% set activeClass = 'active' %}
-              {% for person in client.persons %}
-              <div id="{{ person.familyStatus.alias ~ person.id }}" class="tab-pane {{ activeClass }}">
+              <div class="tab-pane" v-for="person in persons">
                 <div class="post">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" alt="user image"
-                         {% if person.familyStatus.alias == 'self' %}
-                    {% if client.getGender() == 'male' %}
-                    src="{{ '../bundles/ortofitbackofficefront/dist/img/avatar5.png' }}"
-                    {% else %}
-                    src="{{ '../bundles/ortofitbackofficefront/dist/img/avatar3.png' }}"
-                    {% endif %}
-                    {% else %}
-                    src="{{ '../bundles/ortofitbackofficefront/dist/img/avatar-' ~ person.familyStatus.alias ~ '.png' }}"
-                    {% endif %}
-                    >
+                         :src="personAvatar(person)">
                     <span class="username"> <a href="#">{{ person.name }} </a></span>
-                    <span class="description">{{ person.familyStatus.name }} ({{ person.getAge() }} лет)</span>
+                    <span class="description"> person.familyStatus.name  ( person.getAge()  лет)</span>
                   </div>
-                  <button class="btn btn-primary person-diagnosis" person-id="{{ person.id }}" type="button"><i class="fa fa-plus"></i> <span>Диагноз</span></button>
-                  <button class="btn btn-primary person-edit" person-id="{{ person.id }}" type="button"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
+                  <button class="btn btn-primary person-diagnosis" type="button"><i class="fa fa-plus"></i> <span>Диагноз</span></button>
+                  <button class="btn btn-primary person-edit" type="button"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
                   <h5><strong>Диагноз:</strong></h5>
-                  {% for diagnosis in person.diagnoses %}
-                  <p>
-                  <hr>
-                  <i><strong>{{ diagnosis.created|date('d/m/Y') }}</strong></i> <a href="#" class="diagnosis" person-id="{{ person.id }}" id="{{ diagnosis.id}}"><i class="fa fa-pencil"></i></a>
-                  <br> {{ diagnosis.description }}
+
+                  <p v-for="diagnosis in diagnoses">
+                    <hr>
+                    <i><strong>{{ diagnosis.created }}</strong></i> <a href="#" class="diagnosis"><i class="fa fa-pencil"></i></a><br>
+                     {{ diagnosis.description }}
                   </p>
-                  {% endfor %}
+
                 </div>
               </div>
-              {% set activeClass = '' %}
-              {% endfor %}
 
             </div>
           </div>
@@ -109,30 +92,26 @@
               </tr>
               </thead>
               <tbody>
-              {# @var app \Ortofit\Bundle\BackOfficeBundle\Entity\Appointment #}
-              {% for app in allApp %}
-              <tr>
-                <td>{{ app.getDateTime().format('d/m/Y') }}</td>
-                <td>{{ app.getDateTime().format('H:i') }}</td>
+
+              <tr v-for="app in appReports">
+                <td>{{ app.dateTime }}</td>
+                <td>{{ app.dateTime }}</td>
                 <td>
-                  {% if app.office != null %}
-                  {{ app.office.name }}
-                  {% endif %}
+                  getOfficeName(app.officeId)
                 </td>
                 <td>
-                  {% if app.user != null %}
-                  {{ app.user.name }}
-                  {% endif %}
+                  getDoctorName(app.userId)
                 </td>
                 <td>
-                  {% if app.service != null %}
-                  {{ app.service.name }}
-                  {% endif %}
+                  getServiceName(app.serviceId)
                 </td>
                 <td>
+                  <div v-for="personService in personServices">
+                    ({{ getFamilyStatus(personService.personId) }}) <strong>{{ getPersonName(personService.personId.name }}</strong>: {{ service.service.name }}
+                  </div>
                   {# @var service \Ortofit\Bundle\BackOfficeBundle\Entity\PersonService#}
                   {% for service in app.personServices  %}
-                  ({{ service.person.familyStatus.name}}) <strong>{{ service.person.name }}</strong>: {{ service.service.name }}<br>
+                  <br>
                   {% endfor %}
                 </td>
                 <td>
@@ -151,7 +130,6 @@
                   {% endfor %}
                 </td>
               </tr>
-              {% endfor %}
               </tbody>
             </table>
           </div>
@@ -163,12 +141,16 @@
 
 <script>
   import clientService from './../../service/ClientService'
+  import personService from './../../service/PersonService'
+  import appReportService from './../../service/AppointmentReportService'
 
   export default {
     data () {
       return {
         client: clientService.getEmpty(),
-        avatarPath: '/static/img/avatar/'
+        persons: [],
+        avatarPath: '/static/img/avatar/',
+        appReports: []
       }
     },
     computed: {
@@ -181,6 +163,38 @@
         }
         return this.avatarPath + 'unknown.png'
       }
+    },
+    methods: {
+      loadAppReports (clientId) {
+        appReportService.findByClientId(clientId, reports => { this.appReports = reports }, this.errorResponse)
+      },
+      loadPersons (clientId) {
+        personService.findAllByClientId(clientId, persons => { this.persons = persons }, this.errorResponse)
+      },
+      loadClient (clientId) {
+        clientService.findById(clientId, client => { this.client = client }, this.errorResponse)
+      },
+      personAvatar (person) {
+        //
+      },
+      getOfficeName (officeId) {
+        //
+      },
+      getDoctorName (userId) {
+        //
+      },
+      getServiceName (serviceId) {
+        //
+      },
+      errorResponse (err) {
+        console.log(err)
+      }
+    },
+    mounted () {
+      console.log(this.$route.params)
+      this.loadAppReports(this.$route.params.id)
+      this.loadClient(this.$route.params.id)
+      this.loadPersons(this.$route.params.id)
     }
   }
 </script>
