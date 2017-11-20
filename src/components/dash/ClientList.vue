@@ -141,7 +141,7 @@
         return false
       },
       showModal (client) {
-        this.$modal.show('client-modal', {title: 'Новый клиент', mod: CLIENT_CONST.FORM.MOD.ABSOLUTELY, time: moment(), client: client})
+        this.$modal.show('client-modal', {title: (client) ? ' Редактирование клиента' : 'Новый клиент', mod: CLIENT_CONST.FORM.MOD.ABSOLUTELY, time: moment(), client: client})
       }
     },
     mounted () {

@@ -37,8 +37,8 @@
 
               </ul>
               <div class="text-center">
-                <button class="btn btn-primary" type="button"><i class="fa fa-user-plus"></i> <span>Член семьи</span></button>
-                <button class="btn btn-primary" type="button"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
+                <button class="btn btn-primary" type="button" @click="showPersonModal(client)"><i class="fa fa-user-plus"></i> <span>Член семьи</span></button>
+                <button class="btn btn-primary" type="button" @click="showModal(client)"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
 
               </div>
             </div>
@@ -50,21 +50,20 @@
               <li v-for="person in persons" v-bind:class="{'active': (activePersonId == person.id)}"><a href="#" @click="changePerson(person.id)">{{ person.name }}</a></li>
             </ul>
             <div class="tab-content">
-              <div class="tab-pane" v-for="person in persons" v-bind:class="{'active': (activePersonId == person.id)}">
+              <div class="tab-pane active" v-if="activePersonId">
                 <div class="post">
                   <div class="user-block">
-                    <img class="img-circle img-bordered-sm" alt="user image" :src="personAvatar(person)">
-                    <span class="username"> <a href="#">{{ person.name }} </a></span>
-                    <span class="description"> {{ person.familyStatus.name }}  ( {{ getAge(person.born) }}  лет)</span>
+                    <img class="img-circle img-bordered-sm" alt="user image" :src="personAvatar(activePerson)">
+                    <span class="username"> <a href="#">{{ activePerson.name }} </a></span>
+                    <span class="description"> {{ activePerson.familyStatus.name }}  ( {{ getAge(activePerson.born) }}  лет)</span>
                   </div>
                   <button class="btn btn-primary person-diagnosis" type="button"><i class="fa fa-plus"></i> <span>Диагноз</span></button>
-                  <button class="btn btn-primary person-edit" type="button"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
+                  <button class="btn btn-primary person-edit" type="button" @click="showPersonModal(client, activePerson)"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
                   <h5><strong>Диагноз:</strong></h5>
 
-                  <p for="diagnosis in diagnoses">
-                    <hr>
-                    <i><strong> diagnosis.created </strong></i> <a href="#" class="diagnosis"><i class="fa fa-pencil"></i></a><br>
-                      diagnosis.description
+                  <p v-for="diagnos in activeDiagnoses">
+                    <i><strong>  {{ dateFormat(diagnos.created) }}  </strong></i> <a href="#"><i class="fa fa-pencil"></i></a><br>
+                       {{ diagnos.description }}
                   </p>
 
                 </div>
@@ -130,9 +129,9 @@
           </div>
         </div>
       </div>
-
-
     </section>
+    <client-modal ></client-modal>
+    <person-modal ></person-modal>
   </div>
 </template>
 
@@ -144,6 +143,10 @@
   import moment from 'moment'
   import reasonService from './../../service/ReasonService'
   import serviceService from './../../service/ServiceService'
+  import ClientModal from './../client/Modal.vue'
+  import CLIENT_CONST from './../client/ClientConst'
+  import PersonModal from './../person/Modal.vue'
+  import diagnosisService from './../../service/DiagnosisService'
 
   export default {
     data () {
@@ -153,7 +156,10 @@
         avatarPath: '/static/img/avatar/',
         appReports: [],
         lastApp: appService.getEmpty(),
-        activePersonId: null
+        activePersonId: null,
+        activeDiagnoses: [],
+        activePerson: personService.getEmpty(),
+        diagnoses: []
       }
     },
     computed: {
@@ -171,12 +177,27 @@
       }
     },
     methods: {
+      getPersonDiagnoses (personId) {
+        let result = this.diagnoses.find(diagnoses => diagnoses.personId === personId)
+        return (result) ? result.diagnoses : []
+      },
       getAge (timestamp) {
-//        console.log('Timestamp', moment().format('x'))
         return moment.duration(moment().format('x') - timestamp).years()
       },
       changePerson (personId) {
         this.activePersonId = personId
+        this.activePerson = this.persons.find(person => person.id === personId)
+        this.activeDiagnoses = this.getPersonDiagnoses(personId)
+      },
+      loadDiagnosis (persons) {
+        for (let i = 0; i < persons.length; i++) {
+          diagnosisService.findAllByPersonId(persons[i].id, diagnoses => {
+            this.diagnoses.push({ personId: persons[i].id, diagnoses: diagnoses })
+            if (this.activePersonId === persons[i].id) {
+              this.activeDiagnoses = diagnoses
+            }
+          }, this.errorResponse)
+        }
       },
       loadAppReports (clientId) {
         appReportService.findByClientId(clientId, reports => { this.appReports = reports }, this.errorResponse)
@@ -186,6 +207,8 @@
           this.persons = persons
           if (persons.length > 0) {
             this.activePersonId = persons[0].id
+            this.activePerson = persons[0]
+            this.loadDiagnosis(persons)
           }
         }, this.errorResponse)
       },
@@ -209,7 +232,6 @@
       },
       getServiceName (id) {
         let service = serviceService.getServiceById(id)
-        console.log('ID ' + id, service)
         return (typeof service !== 'undefined') ? service.name : ''
       },
       personAvatar (person) {
@@ -224,22 +246,25 @@
         }
         return this.avatarPath + 'avatar-' + person.familyStatus.alias + '.png'
       },
-      getOfficeName (officeId) {
-        //
-      },
-      getDoctorName (userId) {
-        //
-      },
       errorResponse (err) {
         console.log(err)
+      },
+      showModal (client) {
+        this.$modal.show('client-modal', {title: (client) ? ' Редактирование клиента' : 'Новый клиент', mod: CLIENT_CONST.FORM.MOD.ABSOLUTELY, time: moment(), client: client})
+      },
+      showPersonModal (client, person) {
+        this.$modal.show('person-modal', {title: (person) ? ' Редактирование члена семьи' : 'Новый член семьи', time: moment(), client: client, person: person})
       }
     },
     mounted () {
-      console.log(this.$route.params)
       this.loadLastApp(this.$route.params.id)
       this.loadAppReports(this.$route.params.id)
       this.loadClient(this.$route.params.id)
       this.loadPersons(this.$route.params.id)
+    },
+    components: {
+      'client-modal': ClientModal,
+      'person-modal': PersonModal
     }
   }
 </script>

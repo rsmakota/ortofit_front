@@ -5,7 +5,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button class="close" type="button" @click="closeEventHandler"> <span>×</span></button>
-        <h4 id="myModalLabel" class="modal-title">Новый клиента</h4>
+        <h4 id="myModalLabel" class="modal-title">{{ title }}</h4>
       </div>
       <client-form
                    @complete="clientFormComplete"
@@ -30,13 +30,15 @@
         state: null,
         params: null,
         client: null,
-        mod: null
+        mod: null,
+        title: ''
       }
     },
     methods: {
       beforeOpenEventHandler (event) {
         this.params = event.params
         this.mod = this.params.mod
+        this.title = this.params.title
         if (this.params.client) {
           this.client = this.params.client
         } else {
