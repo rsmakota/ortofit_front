@@ -22,8 +22,7 @@
           <div class="box box-primary">
             <div class="box-body no-padding">
               <!-- THE CALENDAR -->
-              <full-calendar ref="calendar" :event-sources="eventSources" @event-selected="eventSelected"
-                             @event-created="eventCreated" :config="config"></full-calendar>
+              <full-calendar ref="calendar" :event-sources="eventSources" :config="config"></full-calendar>
             </div><!-- /.box-body -->
           </div><!-- /. box -->
         </div><!-- /.col -->
@@ -33,7 +32,7 @@
 </template>
 
 <script>
-//  import appProperty from './../../property'
+  import appProperty from './../../property'
   import { bus } from './../event/bus'
   import appState from './appointment/AppointmentConst'
   import { mapGetters, mapMutations } from 'vuex'
@@ -73,20 +72,13 @@
           slotLabelFormat: 'HH:mm',
           minTime: '09:00:00',
           maxTime: '19:30:00',
-          events: this.getEventsSource(),
+          events: null,
           editable: false,
           droppable: false,
           selectable: false,
           textEscape: false
         },
         selected: {}
-      }
-    },
-    watch: {
-      officeId: function () {
-        console.log('WATCH')
-        this.removeEventSources()
-        this.addEventSource(this.getEventsSource())
       }
     },
     methods: {
@@ -112,79 +104,40 @@
         }
         return null
       },
-//      changeOffice (id) {
-//        this.removeEventSources()
-//        this.$store.commit('office/setOfficeId', id)
-//        this.addEventSource(this.getEventsSource())
-//        console.log('Change Office', id)
-//        this.setOfficeId(id)
-//      },
       setDoctorId (id) {
-        this.removeEventSources()
         this.$store.commit('setDoctorId', id)
         this.currentDoctorId = id
-        this.addEventSource(this.getEventsSource())
       },
       getEventsSource () {
-        return null
-//        if (this.officeId === null) {
-//          return null
-//        }
-//        let data = {access_token: this.$store.state.auth.token, officeId: this.officeId}
-//        let doctorId = this.getDoctorId()
-//        if (doctorId !== null) {
-//          data.doctorId = doctorId
-//        }
-//        return {url: appProperty.scheduleApiUrl, data: data}
+        let data = {access_token: this.auth.token, officeId: this.officeId}
+        let doctorId = this.getDoctorId()
+        if (doctorId !== null) {
+          data.doctorId = doctorId
+        }
+        return {url: appProperty.scheduleApiUrl, data: data}
       },
       refreshEvents () {
         this.$refs.calendar.$emit('refetch-events')
       },
-      removeEventSources () {
-        this.$refs.calendar.fireMethod('removeEventSources')
-      },
-      addEventSource (source) {
-        this.$refs.calendar.fireMethod('addEventSource', source)
-      },
-      removeEvent () {
-        this.$refs.calendar.$emit('remove-event', this.selected)
-        this.selected = {}
-      },
-      eventSelected (event) {
-//        this.selected = event
-      },
-      eventCreated (...test) {
-//        console.log(test)
-      },
       ...mapMutations({
         setOfficeId: 'office/setOfficeId'
       })
-//      loadOffices () {
-//        this.offices = this.$store.state.office.offices
-//      }
     },
     computed: {
       ...mapGetters({
         offices: 'office/getAll',
-        officeId: 'office/getOfficeId'
+        officeId: 'office/getOfficeId',
+        auth: 'getAuth'
       }),
       eventSources () {
-        //      const self = this
         return [
-          //        {
-          //          events (start, end, timezone, callback) {
-          //            setTimeout(() => {
-          //              callback(self.events.filter(() => Math.random() > 0.5))
-          //            }, 1000)
-          //          }
-          //        }
+          this.getEventsSource()
         ]
       }
     },
     mounted () {
       bus.$on('menu-click-doctor-event', this.setDoctorId)
       bus.$on('appointment-schedule-refresh', this.refreshEvents)
-      console.log('officeId', this.officeId)
     }
   }
 </script>

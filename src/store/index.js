@@ -27,6 +27,9 @@ const store = new Vuex.Store({
       state.doctorId = doctorId
     }
   },
+  getters: {
+    getAuth: state => state.auth
+  },
   modules: {
     doctor,
     office,
