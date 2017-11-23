@@ -5,7 +5,7 @@
       <form class="form-horizontal" id="diagnosisForm">
 
         <div class="form-group">
-          <label class="col-sm-3 control-label">Заметка:</label>
+          <label class="col-sm-3 control-label">Диагноз(Заметка):</label>
 
           <div class="col-sm-9">
             <textarea class="form-control" rows="4" v-model="description"></textarea>

@@ -14,7 +14,6 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     auth: {},
-    officeId: null,
     doctorId: null
   },
   mutations: {
@@ -23,9 +22,6 @@ const store = new Vuex.Store({
     },
     logout (state) {
       state.auth = {}
-    },
-    setOfficeId (state, officeId) {
-      state.officeId = officeId
     },
     setDoctorId (state, doctorId) {
       state.doctorId = doctorId
@@ -51,6 +47,6 @@ const store = new Vuex.Store({
       dispatch('insoleType/loadInsoleTypes', state.empty)
     }
   },
-  plugins: [createPersistedState({paths: ['auth', 'officeId']})]
+  plugins: [createPersistedState({paths: ['auth', 'office.officeId', 'doctor.doctorId']})]
 })
 export default store

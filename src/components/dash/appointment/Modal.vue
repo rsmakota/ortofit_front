@@ -369,9 +369,6 @@
       'rewind': Rewind,
       'error': Error
     },
-//    mounted () {
-//      bus.$on('appointment-modal-close', this.closeEventHandler)
-//    },
     computed: {
       ...mapGetters({
         doctors: 'doctor/getAll',

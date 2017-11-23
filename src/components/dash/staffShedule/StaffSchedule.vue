@@ -6,8 +6,7 @@
           График приема
         </h1>
         <ol class="breadcrumb">
-          <li><a href="javascript:;"><i class="fa fa-home"></i>График приема</a></li>
-          <!--<li class="active">{{$route.name.toUpperCase() }}</li>-->
+          <li><a href="javascript:;"><i class="fa fa-home"></i>График работы</a></li>
         </ol>
       </section>
     <!-- content -->
@@ -15,8 +14,8 @@
       <div class="row">
         <div class="col-md-12">
           <ul id="office_tabs" class="nav nav-tabs">
-            <li v-for="(office, index) in offices" v-bind:class="{'active': (office.id == officeId)}">
-              <a @click="setOfficeId(office.id)" class="office_link">{{ office.name }}</a>
+            <li v-for="(office, index) in offices" v-bind:class="{'active': (office.id == currentOfficeId)}">
+              <a v-on:click="setOfficeId(office.id)" class="office_link">{{ office.name }}</a>
             </li>
           </ul>
           <div class="box box-primary">
@@ -33,15 +32,17 @@
 </template>
 
 <script>
-//  import appProperty from './../../property'
+  import appProperty from './../../property'
   import { bus } from './../event/bus'
   import appState from './appointment/AppointmentConst'
-  import { mapGetters, mapMutations } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
+    props: {doctorId: {type: Number, 'default': null}, officeId: {type: Number, 'default': null}},
     data () {
       return {
-        currentDoctorId: null,
+        currentOfficeId: this.officeId,
+        currentDoctorId: this.doctorId,
         config: {
           eventClick: this.eventClick,
           dayClick: this.dayClick,
@@ -82,16 +83,9 @@
         selected: {}
       }
     },
-    watch: {
-      officeId: function () {
-        console.log('WATCH')
-        this.removeEventSources()
-        this.addEventSource(this.getEventsSource())
-      }
-    },
     methods: {
       dayClick (date) {
-        let params = {title: 'Запись на прием', fromCalendar: true, state: appState.FLOW.NEW, dateTime: date, officeId: this.officeId, doctorId: this.getDoctorId(), client: null}
+        let params = {title: 'Запись на прием', fromCalendar: true, state: appState.FLOW.NEW, dateTime: date, officeId: this.getOfficeId(), doctorId: this.getDoctorId(), client: null}
         this.$modal.show('appointment-modal', params)
         return false
       },
@@ -106,19 +100,33 @@
         }
         element.addClass(event.class)
       },
+      getOfficeId () {
+        if (this.currentOfficeId != null) {
+          return this.currentOfficeId
+        }
+        if (this.officeId != null) {
+          return this.officeId
+        }
+        if (this.$store.state.officeId != null) {
+          return this.$store.state.officeId
+        }
+        return 1
+      },
       getDoctorId () {
         if (this.currentDoctorId != null) {
           return this.currentDoctorId
         }
+        if (this.doctorId != null) {
+          return this.doctorId
+        }
         return null
       },
-//      changeOffice (id) {
-//        this.removeEventSources()
-//        this.$store.commit('office/setOfficeId', id)
-//        this.addEventSource(this.getEventsSource())
-//        console.log('Change Office', id)
-//        this.setOfficeId(id)
-//      },
+      setOfficeId (id) {
+        this.removeEventSources()
+        this.$store.commit('setOfficeId', id)
+        this.currentOfficeId = id
+        this.addEventSource(this.getEventsSource())
+      },
       setDoctorId (id) {
         this.removeEventSources()
         this.$store.commit('setDoctorId', id)
@@ -126,16 +134,13 @@
         this.addEventSource(this.getEventsSource())
       },
       getEventsSource () {
-        return null
-//        if (this.officeId === null) {
-//          return null
-//        }
-//        let data = {access_token: this.$store.state.auth.token, officeId: this.officeId}
-//        let doctorId = this.getDoctorId()
-//        if (doctorId !== null) {
-//          data.doctorId = doctorId
-//        }
-//        return {url: appProperty.scheduleApiUrl, data: data}
+        let data = {access_token: this.$store.state.auth.token, officeId: this.getOfficeId()}
+//        console.log(data)
+        let doctorId = this.getDoctorId()
+        if (doctorId !== null) {
+          data.doctorId = doctorId
+        }
+        return {url: appProperty.scheduleApiUrl, data: data}
       },
       refreshEvents () {
         this.$refs.calendar.$emit('refetch-events')
@@ -155,18 +160,14 @@
       },
       eventCreated (...test) {
 //        console.log(test)
-      },
-      ...mapMutations({
-        setOfficeId: 'office/setOfficeId'
-      })
+      }
 //      loadOffices () {
 //        this.offices = this.$store.state.office.offices
 //      }
     },
     computed: {
       ...mapGetters({
-        offices: 'office/getAll',
-        officeId: 'office/getOfficeId'
+        offices: 'office/getAll'
       }),
       eventSources () {
         //      const self = this
@@ -182,9 +183,9 @@
       }
     },
     mounted () {
+      this.currentOfficeId = this.getOfficeId()
       bus.$on('menu-click-doctor-event', this.setDoctorId)
       bus.$on('appointment-schedule-refresh', this.refreshEvents)
-      console.log('officeId', this.officeId)
     }
   }
 </script>

@@ -48,12 +48,15 @@
         }
       },
       personFormSave () {
+        this.person.isClient = this.person.familyStatus.alias === 'self'
+        this.person.clientId = this.client.id
         personService.save(this.person, this.closeEventHandler, this.errorResponse)
       },
       errorResponse (err) {
         console.log(err)
       },
       closeEventHandler () {
+        this.$emit('close')
         this.$modal.hide('person-modal')
       }
     },

@@ -89,7 +89,6 @@
     },
     methods: {
       btnSavePerson () {
-//        console.log(this['dtConf'])
         if (this.sanitizeServer()) {
           this.$emit('save')
         }

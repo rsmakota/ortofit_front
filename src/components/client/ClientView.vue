@@ -47,22 +47,22 @@
         <div class="col-md-9">
           <div class="nav-tabs-custom">
             <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-              <li v-for="person in persons" v-bind:class="{'active': (activePersonId == person.id)}"><a href="#" @click="changePerson(person.id)">{{ person.name }}</a></li>
+              <li v-for="person in persons" v-bind:class="{'active': (activePersonId == person.id)}"><a href="javascript:void(0);" @click="changePerson(person.id)">{{ person.name }}</a></li>
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" v-if="activePersonId">
                 <div class="post">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" alt="user image" :src="personAvatar(activePerson)">
-                    <span class="username"> <a href="#">{{ activePerson.name }} </a></span>
+                    <span class="username"> <a href="javascript:void(0);">{{ activePerson.name }} </a></span>
                     <span class="description"> {{ activePerson.familyStatus.name }}  ( {{ getAge(activePerson.born) }}  лет)</span>
                   </div>
-                  <button class="btn btn-primary person-diagnosis" type="button"><i class="fa fa-plus"></i> <span>Диагноз</span></button>
+                  <button class="btn btn-primary person-diagnosis" type="button" @click="showDiagnosis(null)"><i class="fa fa-plus"></i> <span>Диагноз</span></button>
                   <button class="btn btn-primary person-edit" type="button" @click="showPersonModal(client, activePerson)"><i class="fa fa-pencil"></i> <span>Редактировать</span></button>
                   <h5><strong>Диагноз:</strong></h5>
 
                   <p v-for="diagnos in activeDiagnoses">
-                    <i><strong>  {{ dateFormat(diagnos.created) }}  </strong></i> <a href="#"><i class="fa fa-pencil"></i></a><br>
+                    <i><strong>  {{ dateFormat(diagnos.created) }}  </strong></i> <a href="javascript:void(0);" @click="showDiagnosis(diagnos)"><i class="fa fa-pencil"></i></a><br>
                        {{ diagnos.description }}
                   </p>
 
@@ -131,7 +131,8 @@
       </div>
     </section>
     <client-modal ></client-modal>
-    <person-modal ></person-modal>
+    <person-modal  @close="loadData"></person-modal>
+    <diagnosis-modal @close="reloadDiagnosis"></diagnosis-modal>
   </div>
 </template>
 
@@ -147,6 +148,8 @@
   import CLIENT_CONST from './../client/ClientConst'
   import PersonModal from './../person/Modal.vue'
   import diagnosisService from './../../service/DiagnosisService'
+  import DiagnosisModal from './../diagnosis/Modal'
+  import Vue from 'vue'
 
   export default {
     data () {
@@ -188,6 +191,14 @@
         this.activePersonId = personId
         this.activePerson = this.persons.find(person => person.id === personId)
         this.activeDiagnoses = this.getPersonDiagnoses(personId)
+      },
+      reloadDiagnosis () {
+        diagnosisService.findAllByPersonId(this.activePersonId, diagnoses => {
+          let i = this.diagnoses.findIndex(item => item.personId === this.activePersonId)
+          let newItem = { personId: this.activePersonId, diagnoses: diagnoses }
+          Vue.set(this.diagnoses, i, newItem)
+          this.activeDiagnoses = diagnoses
+        }, this.errorResponse)
       },
       loadDiagnosis (persons) {
         for (let i = 0; i < persons.length; i++) {
@@ -254,17 +265,24 @@
       },
       showPersonModal (client, person) {
         this.$modal.show('person-modal', {title: (person) ? ' Редактирование члена семьи' : 'Новый член семьи', time: moment(), client: client, person: person})
+      },
+      showDiagnosis (diagnosis) {
+        this.$modal.show('diagnosis-modal', {title: (diagnosis) ? ' Редактирование диагноза(заметки)' : 'Новый диагноз(заметка)', person: this.activePerson, diagnosis: diagnosis})
+      },
+      loadData () {
+        this.loadLastApp(this.$route.params.id)
+        this.loadAppReports(this.$route.params.id)
+        this.loadClient(this.$route.params.id)
+        this.loadPersons(this.$route.params.id)
       }
     },
     mounted () {
-      this.loadLastApp(this.$route.params.id)
-      this.loadAppReports(this.$route.params.id)
-      this.loadClient(this.$route.params.id)
-      this.loadPersons(this.$route.params.id)
+      this.loadData()
     },
     components: {
       'client-modal': ClientModal,
-      'person-modal': PersonModal
+      'person-modal': PersonModal,
+      'diagnosis-modal': DiagnosisModal
     }
   }
 </script>
