@@ -5,6 +5,7 @@ import Login from '@/components/Login'
 import Schedule from '@/components/dash/Schedule'
 import ClientList from '@/components/dash/ClientList'
 import ClientView from '@/components/client/ClientView'
+import StaffSchedule from './../components/dash/staffShedule/StaffSchedule.vue'
 import store from '../store'
 
 Vue.use(Router)
@@ -37,6 +38,11 @@ let router = new Router({
           path: '/client/:id',
           component: ClientView,
           name: 'ClientView'
+        },
+        {
+          path: '/staff_schedule/:doctorId',
+          component: StaffSchedule,
+          name: 'StaffSchedule'
         }
       ]
     }

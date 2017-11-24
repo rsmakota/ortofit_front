@@ -49,7 +49,7 @@
         clientService.findByMsisdn(this.client.msisdn, client => { this.client = client }, this.errorResponse)
       },
       clientFormSave: function () {
-        clientService.save(this.client, this.setClient, this.errorResponse)
+        clientService.save(this.client, this.closeEventHandler, this.errorResponse)
       },
       clientFormComplete: function () {
         this.$modal.hide('client-modal')
@@ -58,6 +58,7 @@
         console.log(err)
       },
       closeEventHandler () {
+        this.$emit('close')
         this.$modal.hide('client-modal')
       }
     },

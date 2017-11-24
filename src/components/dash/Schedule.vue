@@ -102,6 +102,9 @@
         if (this.currentDoctorId != null) {
           return this.currentDoctorId
         }
+        if (this.$route.params.doctorId) {
+          return this.$route.params.doctorId
+        }
         return null
       },
       setDoctorId (id) {

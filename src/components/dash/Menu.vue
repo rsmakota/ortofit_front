@@ -4,14 +4,14 @@
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
       <!--<li class="header">TOOLS</li>-->
-      <li class="treeview" id="appointments" v-bind:class="{'active': (activeMenu == 'doctorList')}">
-        <a href="#" @click="openCloseMenu('doctorList')">
+      <li class="treeview" id="appointments" :class="{'active': (activeMenu == 'Schedule')}">
+        <a href="javascript:void(0);" @click="openCloseMenu('Schedule')">
           <i class="fa fa-calendar"></i> <span>График приема</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
 
         <ul class="treeview-menu" id="doctorList" >
-          <li v-for="(doctor, index) in doctors" v-bind:class="{'active': (activeDoctorId == doctor.id)}" v-bind="doctors">
+          <li v-for="(doctor, index) in doctors" :class="{'active': (activeDoctorId == doctor.id)}">
             <a href="javascript:void(0);" @click="clickDoctor(doctor.id)"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></a>
           </li>
           <li v-bind:class="{'active': (activeDoctorId == null)}">
@@ -23,17 +23,19 @@
       </li>
 
 
-      <li class="pageLink" v-bind:class="{'active': (activeMenu == 'clientList')}" v-on:click="openCloseMenu('clientList')">
-        <router-link to="/client_list" ><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
+      <li class="pageLink" :class="{'active': (activeMenu == 'ClientList')}" @click="openCloseMenu('ClientList')">
+        <router-link to="/client_list"><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
       </li>
-      <li class="treeview" id="schedule">
-        <a href="javascript:void(0);">
+
+
+      <li class="treeview" id="schedule" :class="{'active': (activeMenu == 'StaffSchedule')}">
+        <a href="javascript:void(0);" @click="openCloseMenu('StaffSchedule')" >
           <i class="fa fa-calendar-check-o"></i> <span>График работы</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="doctorsScheduleList">
-          <li v-for="(doctor, index) in doctors" v-bind:class="{'active': (activeDoctorId == doctor.id)}">
-            <a href="javascript:void(0);" @click="clickDoctor(doctor.id)"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></a>
+          <li v-for="doctor in doctors" :class="{'active': ((currentRoutName == 'StaffSchedule') && ($route.params.doctorId == doctor.id))}">
+            <router-link :to="{ name: 'StaffSchedule', params:{doctorId: doctor.id}}"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></router-link>
           </li>
         </ul>
       </li>
@@ -52,15 +54,14 @@
     data () {
       return {
         doctorsTree: false,
-        activeMenu: 'doctorList',
+        activeMenu: null,
         activeDoctorId: null
       }
     },
     methods: {
-      clickDoctor (doctorId, event) {
-        let currentRouteName = this.$router.history.current.name
+      clickDoctor (doctorId) {
         this.activeDoctorId = doctorId
-        if (currentRouteName === 'Schedule') {
+        if (this.currentRoutName === 'Schedule') {
           bus.$emit('menu-click-doctor-event', doctorId)
         } else {
           this.$router.push({name: 'Schedule', append: true, params: {doctorId: doctorId}})
@@ -77,7 +78,13 @@
     computed: {
       ...mapGetters({
         doctors: 'doctor/getAll'
-      })
+      }),
+      currentRoutName: function () {
+        return this.$route.name
+      }
+    },
+    mounted () {
+      this.activeMenu = this.currentRoutName
     }
   }
 </script>

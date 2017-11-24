@@ -130,7 +130,7 @@
         </div>
       </div>
     </section>
-    <client-modal ></client-modal>
+    <client-modal @close="loadData"></client-modal>
     <person-modal  @close="loadData"></person-modal>
     <diagnosis-modal @close="reloadDiagnosis"></diagnosis-modal>
   </div>

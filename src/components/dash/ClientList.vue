@@ -82,7 +82,7 @@
       </div>
     </div>
   </section>
-    <client-modal ></client-modal>
+    <client-modal @close="loadData"></client-modal>
   </div>
 </template>
 
@@ -127,6 +127,9 @@
       },
       changePage (num) {
         this.request.page = num
+        this.loadData()
+      },
+      loadData () {
         clientService.findAll(this.request, this.responseHandler, this.errorHandler)
       },
       responseHandler (response) {
@@ -149,11 +152,6 @@
     },
     computed: {
       ...mapGetters({
-//        doctors: 'doctor/getAll',
-//        offices: 'office/getAll',
-//        services: 'service/getAll',
-//        reasons: 'reason/getAll',
-//        familyStatuses: 'familyStatus/getAll',
         clientDirections: 'clientDirection/getAll'
       })
     },
