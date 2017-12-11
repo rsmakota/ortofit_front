@@ -37,6 +37,10 @@
           <li v-for="doctor in doctors" :class="{'active': ((currentRoutName == 'StaffSchedule') && ($route.params.doctorId == doctor.id))}">
             <router-link :to="{ name: 'StaffSchedule', params:{doctorId: doctor.id}}"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></router-link>
           </li>
+          <li v-bind:class="{'active': (activeDoctorId == null)}">
+            <router-link :to="{ name: 'StaffSchedule', params:{doctorId: 'all'} }">
+              <i class="fa fa-users-md"></i> Все </router-link>
+          </li>
         </ul>
       </li>
 

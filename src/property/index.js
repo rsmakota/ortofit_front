@@ -1,6 +1,7 @@
 export default {
   apiUrl: 'http://localhost:8090/api',
   scheduleApiUrl: 'http://localhost:8090/api/schedule/',
+  staffScheduleApiUrl: 'http://localhost:8090/api/staff_schedule/',
   auth: {
     url: 'http://localhost:8090/oauth/token',
     requestProps: {
