@@ -27,12 +27,15 @@
         </div><!-- /.col -->
       </div><!-- /.row -->
     </section><!-- /.content -->
+    <schedule-modal @close="refreshEvents"></schedule-modal>
   </div>
 </template>
 
 <script>
   import { mapGetters, mapMutations } from 'vuex'
   import appProperty from './../../../property'
+  import STAFF_SCH_CONST from './../../../const/staffScheduleConst'
+  import ScheduleModal from './Modal'
 
   export default {
 
@@ -78,10 +81,14 @@
       }
     },
     methods: {
+      dayClick (date) {
+        let params = {title: 'График работы', mod: STAFF_SCH_CONST.MOD.NEW, dateTime: date, officeId: this.officeId, doctorId: this.getDoctorId()}
+        this.$modal.show('staff-schedule-modal', params)
+        return false
+      },
       getEventsSource () {
         let data = {access_token: this.auth.token, officeId: this.officeId}
         let doctorId = this.getDoctorId()
-        console.log('DoctorId:', doctorId)
         if (doctorId !== null && doctorId !== 'all') {
           data.doctorId = doctorId
         }
@@ -92,6 +99,9 @@
           return this.$route.params.doctorId
         }
         return null
+      },
+      refreshEvents () {
+        this.$refs.calendar.$emit('refetch-events')
       },
       ...mapMutations({
         setOfficeId: 'office/setOfficeId'
@@ -108,6 +118,10 @@
           this.getEventsSource()
         ]
       }
+    },
+    components: {
+      ScheduleModal,
+      'schedule-modal': ScheduleModal
     }
   }
 </script>

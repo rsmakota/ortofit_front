@@ -23,23 +23,23 @@
       </li>
 
 
-      <li class="pageLink" :class="{'active': (activeMenu == 'ClientList')}" @click="openCloseMenu('ClientList')">
+      <li class="pageLink" :class="{'active': (activeMenu === 'ClientList')}" @click="openCloseMenu('ClientList')">
         <router-link to="/client_list"><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
       </li>
 
 
-      <li class="treeview" id="schedule" :class="{'active': (activeMenu == 'StaffSchedule')}">
+      <li class="treeview" id="schedule" :class="{'active': (activeMenu === 'StaffSchedule')}">
         <a href="javascript:void(0);" @click="openCloseMenu('StaffSchedule')" >
           <i class="fa fa-calendar-check-o"></i> <span>График работы</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="doctorsScheduleList">
-          <li v-for="doctor in doctors" :class="{'active': ((currentRoutName == 'StaffSchedule') && ($route.params.doctorId == doctor.id))}">
+          <li v-for="doctor in doctors" :class="{'active': ((currentRoutName === 'StaffSchedule') && ($route.params.doctorId === doctor.id))}">
             <router-link :to="{ name: 'StaffSchedule', params:{doctorId: doctor.id}}"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></router-link>
           </li>
-          <li v-bind:class="{'active': (activeDoctorId == null)}">
+          <li :class="{'active': ((currentRoutName === 'StaffSchedule') && ($route.params.doctorId === 'all'))}">
             <router-link :to="{ name: 'StaffSchedule', params:{doctorId: 'all'} }">
-              <i class="fa fa-users-md"></i> Все </router-link>
+              <i class="fa fa-user-md"></i> Все </router-link>
           </li>
         </ul>
       </li>
