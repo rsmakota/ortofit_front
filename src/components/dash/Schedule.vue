@@ -120,7 +120,7 @@
         return {url: appProperty.scheduleApiUrl, data: data}
       },
       refreshEvents () {
-        this.$refs.calendar.$emit('refetch-events')
+        this.$refs.calendar.$emit('rebuild-sources')
       },
       ...mapMutations({
         setOfficeId: 'office/setOfficeId'

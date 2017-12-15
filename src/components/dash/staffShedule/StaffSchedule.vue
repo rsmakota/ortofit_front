@@ -86,6 +86,11 @@
         this.$modal.show('staff-schedule-modal', params)
         return false
       },
+      eventClick (event) {
+        let params = {title: 'График работы', state: STAFF_SCH_CONST.MOD.EDIT, scheduleId: event.id}
+        this.$modal.show('staff-schedule-modal', params)
+        return false
+      },
       getEventsSource () {
         let data = {access_token: this.auth.token, officeId: this.officeId}
         let doctorId = this.getDoctorId()
@@ -101,7 +106,7 @@
         return null
       },
       refreshEvents () {
-        this.$refs.calendar.$emit('refetch-events')
+        this.$refs.calendar.$emit('rebuild-sources')
       },
       ...mapMutations({
         setOfficeId: 'office/setOfficeId'

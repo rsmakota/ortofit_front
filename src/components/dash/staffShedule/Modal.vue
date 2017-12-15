@@ -12,6 +12,7 @@
                    :mod="mod"
                    :doctors="doctors"
                    @save="saveSchedule"
+                   @delete="deleteSchedule"
                    >
       </schedule-form>
     </div>
@@ -19,6 +20,7 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import ScheduleForm from './ScheduleForm'
   import staffScheduleService from './../../../service/StaffScheduleService'
   import STAFF_SCH_CONST from './../../../const/staffScheduleConst'
@@ -47,10 +49,17 @@
           this.schedule.endDate = this.params.dateTime.clone().add(1, 'hours')
           return
         }
-        this.schedule = staffScheduleService.find(this.params.id)
+        staffScheduleService.find(this.params.scheduleId, (schedule) => {
+          schedule.startDate = moment(schedule.startDate)
+          schedule.endDate = moment(schedule.endDate)
+          this.schedule = schedule
+        }, this.errorResponse)
       },
       saveSchedule () {
         staffScheduleService.save(this.schedule, this.closeEventHandler, this.errorResponse)
+      },
+      deleteSchedule () {
+        staffScheduleService.delete(this.schedule.id, this.closeEventHandler, this.errorResponse)
       },
       clientFormComplete () {
         this.$modal.hide('client-modal')
