@@ -6,6 +6,7 @@ import Schedule from '@/components/dash/Schedule'
 import ClientList from '@/components/dash/ClientList'
 import ClientView from '@/components/client/ClientView'
 import StaffSchedule from './../components/dash/staffShedule/StaffSchedule.vue'
+import Chart from './../components/dash/chart/Chart'
 import store from '../store'
 
 Vue.use(Router)
@@ -43,6 +44,11 @@ let router = new Router({
           path: '/staff_schedule/:doctorId',
           component: StaffSchedule,
           name: 'StaffSchedule'
+        },
+        {
+          path: '/charts',
+          component: Chart,
+          name: 'Chart'
         }
       ]
     }

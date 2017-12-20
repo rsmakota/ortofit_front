@@ -44,6 +44,12 @@
         </ul>
       </li>
 
+      <li class="treeview" :class="{'active': (activeMenu === 'Chart')}">
+        <router-link :to="{ name: 'Chart'}">
+          <i class="fa fa-bar-chart"></i> <span>Показатели</span>
+        </router-link>
+      </li>
+
     </ul>
     <!-- /.sidebar-menu -->
   </section>
