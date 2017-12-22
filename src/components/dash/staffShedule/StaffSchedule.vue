@@ -3,10 +3,10 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          График приема
+          График работы
         </h1>
         <ol class="breadcrumb">
-          <li><a href="javascript:;"><i class="fa fa-home"></i>График приема</a></li>
+          <li><a href="javascript:;"><i class="fa fa-home"></i>График работы</a></li>
         </ol>
       </section>
     <!-- content -->
@@ -119,6 +119,9 @@
         auth: 'getAuth'
       }),
       eventSources () {
+        if (this.$refs.calendar) {
+          this.$refs.calendar.fireMethod('removeEventSources')
+        }
         return [
           this.getEventsSource()
         ]

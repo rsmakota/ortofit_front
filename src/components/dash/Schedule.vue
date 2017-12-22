@@ -133,6 +133,9 @@
         auth: 'getAuth'
       }),
       eventSources () {
+        if (this.$refs.calendar) {
+          this.$refs.calendar.fireMethod('removeEventSources')
+        }
         return [
           this.getEventsSource()
         ]
