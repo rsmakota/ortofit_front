@@ -20,6 +20,16 @@ const remindService = {
 
   getEmpty: function () {
     return { id: null, personId: null, appointmentId: null, dateTime: null, description: null }
+  },
+  findAll: function (request, callback, errorHandler) {
+    let query = '?page=' + request.page + '&size=' + request.size
+    if (request.msisdn) {
+      query += '&msisdn=' + request.msisdn
+    }
+    for (let i in request.sort) {
+      query += '&sort=' + request.sort[i]
+    }
+    apiClient.get('/remind/list' + query, callback, errorHandler)
   }
 }
 

@@ -7,6 +7,7 @@ import ClientList from '@/components/dash/ClientList'
 import ClientView from '@/components/client/ClientView'
 import StaffSchedule from './../components/dash/staffShedule/StaffSchedule.vue'
 import Chart from './../components/dash/chart/Chart'
+import ActiveRemind from './../components/dash/activeRemind/ActiveRemind'
 import store from '../store'
 
 Vue.use(Router)
@@ -49,6 +50,11 @@ let router = new Router({
           path: '/charts',
           component: Chart,
           name: 'Chart'
+        },
+        {
+          path: '/active_reminds',
+          component: ActiveRemind,
+          name: 'ActiveRemind'
         }
       ]
     }

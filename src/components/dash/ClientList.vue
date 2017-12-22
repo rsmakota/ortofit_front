@@ -112,6 +112,9 @@
       }
     },
     methods: {
+      onSubmit () {
+        //
+      },
       errorHandler (err) {
         console.log(err)
       },

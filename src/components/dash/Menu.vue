@@ -44,9 +44,15 @@
         </ul>
       </li>
 
-      <li class="treeview" :class="{'active': (activeMenu === 'Chart')}">
+      <li class="treeview" :class="{'active': (currentRoutName === 'Chart')}">
         <router-link :to="{ name: 'Chart'}">
           <i class="fa fa-bar-chart"></i> <span>Показатели</span>
+        </router-link>
+      </li>
+
+      <li class="treeview" :class="{'active': (currentRoutName === 'ActiveRemind')}">
+        <router-link :to="{ name: 'ActiveRemind'}">
+          <i class="fa fa-bell-o"></i> <span>Активные напоминания</span>
         </router-link>
       </li>
 
