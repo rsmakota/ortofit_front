@@ -23,7 +23,7 @@
       </li>
 
 
-      <li class="pageLink" :class="{'active': (activeMenu === 'ClientList')}" @click="openCloseMenu('ClientList')">
+      <li class="pageLink" :class="{'active': (currentRoutName === 'ClientList')}">
         <router-link to="/client_list"><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
       </li>
 
