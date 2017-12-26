@@ -88,6 +88,8 @@
     </footer>
 
     <appointment-modal></appointment-modal>
+    <remind-modal></remind-modal>
+    <client-modal></client-modal>
   </div>
 </template>
 
@@ -95,7 +97,9 @@
   import MainMenu from './dash/Menu.vue'
   import AppModal from './dash/appointment/Modal'
   import AppState from './dash/appointment/AppointmentConst'
+  import RemindModal from './dash/remind/Modal'
   import moment from 'moment'
+  import ClientModal from './client/Modal'
 
   export default {
     name: 'Dash',
@@ -108,8 +112,11 @@
       }
     },
     components: {
+      RemindModal,
       'main-menu': MainMenu,
-      'appointment-modal': AppModal
+      'appointment-modal': AppModal,
+      'remind-modal': RemindModal,
+      'client-modal': ClientModal
     },
     mounted () {
       this.$store.dispatch('loadData')

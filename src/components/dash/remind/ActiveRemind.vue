@@ -54,11 +54,11 @@
                         <td>{{ remind.id }}</td>
 
                         <td>{{ remind.clientName }}</td>
-                        <td><a href="#">{{ remind.msisdn }}</a></td>
+                        <td><a href="javascript:void(0);" @click="clientClick(remind.clientId)">{{ remind.msisdn }}</a></td>
                         <td>
                           {{ remind.serviceNameList }}
                         </td>
-                        <td><a href="#"> {{ remind.appointmentId }}</a></td>
+                        <td><a href="javascript:void(0);" @click="appClick(remind.appointmentId)"> {{ remind.appointmentId }}</a></td>
                         <td>
                           {{ dateFormat(remind.appointmentDateTime) }}
                         </td>
@@ -66,7 +66,7 @@
                           {{ dateFormat(remind.dateTime) }}
                         </td>
                         <td>
-                          <i class="fa fa-pencil edit" style="cursor: pointer;"></i>
+                          <a href="javascript:void(0);" @click="editClick(remind)"><i class="fa fa-pencil edit" style="cursor: pointer;"></i></a>
                         </td>
                       </tr>
 
@@ -80,12 +80,8 @@
 
             <div class="box-footer">
               <div class="row">
-                <div class="col-sm-2">
-                  <button type="button" class="btn btn-primary" @click="showModal(null)">Новое напоминание</button>
-                </div>
-                <div class="col-sm-10">
-                  <pagination @changePage="changePage" :pagination="paginationData"
-                              :config="paginationConfig"></pagination>
+                <div class="col-sm-12" style="text-align: center">
+                  <pagination @changePage="changePage" :pagination="paginationData" :config="paginationConfig"></pagination>
                 </div>
               </div>
             </div>
@@ -98,9 +94,12 @@
 </template>
 <script>
   // import { mapGetters } from 'vuex'
+  import RemindModal from './Modal'
   import remindService from './../../../service/RemindService'
   import moment from 'moment'
   import pagination from './../../pagination/Pagination'
+  import appState from './../appointment/AppointmentConst'
+  import clientConst from './../../client/ClientConst'
 
   export default {
     data () {
@@ -121,6 +120,20 @@
     methods: {
       onSubmit () {
         //
+      },
+      appClick (appId) {
+        let params = {title: 'Обзор Визита', state: appState.FLOW.VIEW, appointmentId: appId}
+        this.$modal.show('appointment-modal', params)
+        return false
+      },
+      clientClick (clientId) {
+        let params = {title: 'Обзор', state: 'overview', clientId: clientId, mod: clientConst.FORM.MOD.OVERVIEW}
+        this.$modal.show('client-modal', params)
+        return false
+      },
+      editClick (remindReport) {
+        let params = {title: 'Обзор', remindReport: remindReport, mod: 'edit'}
+        this.$modal.show('remind-modal', params)
       },
       errorHandler (err) {
         console.log(err)
@@ -159,6 +172,7 @@
     //   })
     // },
     components: {
+      RemindModal,
       pagination
       // 'client-modal': ClientModal
     }

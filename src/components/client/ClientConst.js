@@ -7,7 +7,8 @@ const CLIENT_CONST = {
     MOD: {
       APP_ISSUE: 'client.form.mod.issue',
       SHORT: 'client.form.mod.short',
-      ABSOLUTELY: 'client.form.mod.absolutely'
+      ABSOLUTELY: 'client.form.mod.absolutely',
+      OVERVIEW: 'client.form.mod.overview'
     }
   }
 }
