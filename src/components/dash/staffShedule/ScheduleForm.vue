@@ -66,6 +66,7 @@
     </div>
 
     <div class="modal-footer" v-if="schedule">
+      <br><br><br><br>
       <button v-if="schedule.id" type="button" class="btn btn-danger" @click="btnDelete"> Удалить </button>
       <button type="button" class="btn btn-primary" @click="btnSave"> Сохранить </button>
     </div>
@@ -95,7 +96,6 @@
     },
     watch: {
       schedule: function () {
-        console.log('Watch')
         this.date = moment(this.schedule.startDate)
       }
     },

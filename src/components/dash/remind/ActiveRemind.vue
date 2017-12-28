@@ -94,6 +94,7 @@
 </template>
 <script>
   // import { mapGetters } from 'vuex'
+  import { bus } from './../../event/bus'
   import RemindModal from './Modal'
   import remindService from './../../../service/RemindService'
   import moment from 'moment'
@@ -165,6 +166,7 @@
     },
     mounted () {
       remindService.findAll(this.request, this.responseHandler, this.errorHandler)
+      bus.$on('remind-modal-close', this.loadData)
     },
     // computed: {
     //   ...mapGetters({

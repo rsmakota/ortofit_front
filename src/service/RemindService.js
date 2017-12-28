@@ -7,6 +7,9 @@ const remindService = {
   update: function (remind, callback, errHandler) {
     apiClient.put('/remind/', remind, callback, errHandler)
   },
+  delete: function (remindId, callback, errHandler) {
+    apiClient.delete('/remind/', remindId, callback, errHandler)
+  },
   save: function (remind, callback, errHandler) {
     if (('id' in remind) && (remind.id !== null)) {
       this.update(remind, callback, errHandler)

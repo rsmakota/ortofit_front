@@ -82,7 +82,6 @@
       </div>
     </div>
   </section>
-    <client-modal @close="loadData"></client-modal>
   </div>
 </template>
 
@@ -91,8 +90,8 @@
   import clientService from './../../service/ClientService'
   import moment from 'moment'
   import pagination from './../pagination/Pagination'
-  import ClientModal from './../client/Modal.vue'
   import CLIENT_CONST from './../client/ClientConst'
+  import { bus } from './../event/bus'
 
   export default {
     data () {
@@ -152,6 +151,7 @@
     },
     mounted () {
       clientService.findAll(this.request, this.responseHandler, this.errorHandler)
+      bus.$on('client-modal-close', this.loadData)
     },
     computed: {
       ...mapGetters({
@@ -159,8 +159,7 @@
       })
     },
     components: {
-      pagination,
-      'client-modal': ClientModal
+      pagination
     }
   }
 </script>

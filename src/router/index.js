@@ -8,6 +8,7 @@ import ClientView from '@/components/client/ClientView'
 import StaffSchedule from './../components/dash/staffShedule/StaffSchedule.vue'
 import Chart from './../components/dash/chart/Chart'
 import ActiveRemind from '../components/dash/remind/ActiveRemind'
+import Total from './../components/dash/total/Total'
 import store from '../store'
 
 Vue.use(Router)
@@ -55,6 +56,11 @@ let router = new Router({
           path: '/active_reminds',
           component: ActiveRemind,
           name: 'ActiveRemind'
+        },
+        {
+          path: '/totals',
+          component: Total,
+          name: 'Total'
         }
       ]
     }

@@ -19,14 +19,11 @@
             <i class="fa fa-hospital-o"></i> Все </a>
           </li>
         </ul>
-
       </li>
-
 
       <li class="pageLink" :class="{'active': (currentRoutName === 'ClientList')}">
         <router-link to="/client_list"><i class="fa fa-credit-card"></i><span class="page">Клиенты</span></router-link>
       </li>
-
 
       <li class="treeview" id="schedule" :class="{'active': (activeMenu === 'StaffSchedule')}">
         <a href="javascript:void(0);" @click="openCloseMenu('StaffSchedule')" >
@@ -53,6 +50,12 @@
       <li class="treeview" :class="{'active': (currentRoutName === 'ActiveRemind')}">
         <router-link :to="{ name: 'ActiveRemind'}">
           <i class="fa fa-bell-o"></i> <span>Активные напоминания</span>
+        </router-link>
+      </li>
+
+      <li class="treeview" :class="{'active': (currentRoutName === 'Total')}">
+        <router-link :to="{ name: 'Total'}">
+          <i class="fa fa-book"></i>Итоги<span></span>
         </router-link>
       </li>
 

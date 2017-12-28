@@ -12,6 +12,8 @@
         :office="office"
         :doctor="doctor"
         @close="closeEventHandler"
+        @delete="deleteHandler"
+        @update="updateHandler"
       >
       </remind-form>
     </div>
@@ -19,8 +21,10 @@
 </template>
 
 <script>
+  import { bus } from './../../event/bus'
   import { mapGetters } from 'vuex'
   import RemindForm from './RemindForm'
+  import remindService from './../../../service/RemindService'
 
   export default {
     data () {
@@ -47,8 +51,15 @@
         console.log(err)
       },
       closeEventHandler () {
+        bus.$emit('remind-modal-close')
         this.$emit('close')
         this.$modal.hide('remind-modal')
+      },
+      updateHandler (remind) {
+        remindService.update(remind, this.closeEventHandler, this.errorHandler)
+      },
+      deleteHandler (remindId) {
+        remindService.delete(remindId, this.closeEventHandler, this.errorHandler)
       }
     },
     components: {

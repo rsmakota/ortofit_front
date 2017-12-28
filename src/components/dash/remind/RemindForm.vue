@@ -61,9 +61,7 @@
           <label class="col-sm-3 control-label">Текст:</label>
 
           <div class="col-sm-9">
-            <textarea class="form-control" rows="3">
-              {{ description }}
-            </textarea>
+            <textarea class="form-control" rows="3" v-model="description">{{ description }}</textarea>
           </div>
         </div>
 
@@ -106,10 +104,17 @@
         return moment(timestamp).format('HH:mm')
       },
       btnDelete () {
-        this.$emit('delete', {id: this.remindReport.id})
+        this.$emit('delete', this.remindReport.id)
       },
       btnUpdate () {
-        this.$emit('update', {id: this.remindReport.id, dateTime: this.getDateTime(), description: this.description})
+        this.$emit('update', {
+          id: this.remindReport.id,
+          dateTime: this.getDateTime(),
+          description: this.description,
+          appointmentId: this.remindReport.appointmentId,
+          personId: this.remindReport.personId,
+          processed: this.remindReport.processed
+        })
       }
     },
     components: {
@@ -118,6 +123,7 @@
     mounted () {
       this.date = moment(this.remindReport.dateTime)
       this.description = this.remindReport.description
+      console.log(this.$modal)
     }
   }
 </script>

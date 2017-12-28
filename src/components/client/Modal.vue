@@ -29,6 +29,7 @@
 </template>
 
 <script>
+  import { bus } from './../event/bus'
   import ClientForm from './ClientForm.vue'
   import clientService from './../../service/ClientService'
   import ClientFormOverview from './ClientOverviewForm'
@@ -76,6 +77,7 @@
         console.log(err)
       },
       closeEventHandler () {
+        bus.$emit('client-modal-close')
         this.$emit('close')
         this.$modal.hide('client-modal')
       }
