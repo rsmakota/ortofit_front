@@ -6,6 +6,9 @@ const appReportService = {
   },
   findTotal: function (request, callback, errHandler) {
     client.get('/appointment_report/total?from=' + request.from + '&to=' + request.to + '&officeId=' + request.officeId, callback, errHandler)
+  },
+  findSettlement: function (request, callback, errHandler) {
+    client.get('/appointment_report/settlement?from=' + request.from + '&to=' + request.to, callback, errHandler)
   }
 }
 

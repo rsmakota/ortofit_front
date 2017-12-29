@@ -9,6 +9,7 @@ import StaffSchedule from './../components/dash/staffShedule/StaffSchedule.vue'
 import Chart from './../components/dash/chart/Chart'
 import ActiveRemind from '../components/dash/remind/ActiveRemind'
 import Total from './../components/dash/total/Total'
+import Settlement from './../components/dash/settlement/Settlement'
 import store from '../store'
 
 Vue.use(Router)
@@ -61,6 +62,11 @@ let router = new Router({
           path: '/totals',
           component: Total,
           name: 'Total'
+        },
+        {
+          path: '/settlement',
+          component: Settlement,
+          name: 'Settlement'
         }
       ]
     }

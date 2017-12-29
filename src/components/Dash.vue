@@ -22,7 +22,7 @@
             <li class="dropdown messages-menu">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-envelope-o"></i>
-                <span class="label label-success"> </span>
+                <span class="label label-success"></span>
               </a>
               <ul class="dropdown-menu">
                 <li class="header">You have message(s)</li>
@@ -36,7 +36,7 @@
             <li class="dropdown notifications-menu">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-bell-o"></i>
-                <span class="label label-warning"></span>
+                <span class="label label-warning">{{ reminds }}</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="header">You have notification(s)</li>
@@ -48,8 +48,8 @@
             <!-- Tasks Menu -->
             <li class="dropdown tasks-menu">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-flag-o"></i>
-                <span class="label label-danger"> </span>
+                <i class="fa fa-internet-explorer"></i>
+                <span class="label label-danger">{{ orders }}</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="header">You have  task(s)</li>
@@ -100,15 +100,31 @@
   import RemindModal from './dash/remind/Modal'
   import moment from 'moment'
   import ClientModal from './client/Modal'
+  import nitificationService from './../service/NotificationService'
 
   export default {
     name: 'Dash',
     data () {
-      return {}
+      return {
+        notifications: {reminds: null, orders: null},
+        interval: null
+      }
     },
     methods: {
-      appointmentModalShow: function () {
+      appointmentModalShow () {
         this.$modal.show('appointment-modal', {title: 'Запись на прием', state: AppState.FLOW.NEW, time: moment()})
+      },
+      errorHandler (err) {
+        console.log(err)
+      },
+      loadNotifications () {
+        nitificationService.findAll((response) => { this.notifications = response }, this.errorHandler)
+      },
+      todo () {
+        this.loadNotifications()
+        this.interval = setInterval(function () {
+          this.loadNotifications()
+        }.bind(this), 100000)
       }
     },
     components: {
@@ -118,8 +134,17 @@
       'remind-modal': RemindModal,
       'client-modal': ClientModal
     },
+    computed: {
+      reminds: function () {
+        return this.notifications.reminds
+      },
+      orders: function () {
+        return this.notifications.orders
+      }
+    },
     mounted () {
       this.$store.dispatch('loadData')
+      this.todo()
     }
   }
 </script>

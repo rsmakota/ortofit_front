@@ -58,6 +58,11 @@
           <i class="fa fa-book"></i>Итоги<span></span>
         </router-link>
       </li>
+      <li class="treeview" :class="{'active': (currentRoutName === 'Settlement')}">
+        <router-link :to="{ name: 'Settlement'}">
+          <i class="fa fa-money"></i>Расчеты<span></span>
+        </router-link>
+      </li>
 
     </ul>
     <!-- /.sidebar-menu -->
