@@ -43,6 +43,7 @@
           </div>
         </div><!-- /.col -->
       </div><!-- /.row -->
+
       <div class="row">
         <div class="col-xs-10 table-responsive" style="display:table; height: 100%">
           <div v-if="reportsIsEmpty"><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></div>

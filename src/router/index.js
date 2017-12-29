@@ -10,6 +10,7 @@ import Chart from './../components/dash/chart/Chart'
 import ActiveRemind from '../components/dash/remind/ActiveRemind'
 import Total from './../components/dash/total/Total'
 import Settlement from './../components/dash/settlement/Settlement'
+import Order from './../components/dash/order/Order'
 import store from '../store'
 
 Vue.use(Router)
@@ -67,6 +68,11 @@ let router = new Router({
           path: '/settlement',
           component: Settlement,
           name: 'Settlement'
+        },
+        {
+          path: '/order',
+          component: Order,
+          name: 'Order'
         }
       ]
     }

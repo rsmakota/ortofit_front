@@ -47,10 +47,11 @@
 
             <!-- Tasks Menu -->
             <li class="dropdown tasks-menu">
-              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                <router-link :to="{ name: 'Order'}" class="dropdown-toggle">
                 <i class="fa fa-internet-explorer"></i>
                 <span class="label label-danger">{{ orders }}</span>
-              </a>
+                </router-link>
+
               <ul class="dropdown-menu">
                 <li class="header">You have  task(s)</li>
 
