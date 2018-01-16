@@ -13,7 +13,7 @@
           <td><i class="fa fa-phone"></i></td>
           <td>Телефон:</td>
           <td>
-              <a href="#" v-if="client">{{ client.msisdn }}</a>
+            <router-link v-if="client" :to="{ name: 'ClientView', params: { id: client.id }}">{{ client.msisdn }}</router-link>
           </td>
           <td></td>
         </tr>

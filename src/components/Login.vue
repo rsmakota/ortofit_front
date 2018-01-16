@@ -58,14 +58,14 @@
     name: 'Login',
     data () {
       return {
-        username: 'j_rodion',
-        password: '123456',
+        username: (process.env.NODE_ENV === 'production') ? null : 'j_rodion',
+        password: (process.env.NODE_ENV === 'production') ? null : '123456',
         error: false
       }
     },
     methods: {
       login () {
-        this.$http.post(AppProps.auth.url,
+        this.$http.post(AppProps.getOauthTokenUrl(),
           {
             grant_type: 'password',
             username: this.username,

@@ -19,7 +19,7 @@ Vue.use(VueStrap)
 Vue.use(VModal)
 // Vue.use(AppProps)
 Vue.use(calendar)
-Vue.http.options.root = AppProps.apiUrl
+Vue.http.options.root = AppProps.getApiUrl()
 Vue.http.interceptors.push(function (request, next) {
   if (!request.url.includes('oauth/token') && store.state.auth.authenticated) {
     request.headers.set('Authorization', `Bearer ${store.state.auth.token}`)

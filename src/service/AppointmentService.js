@@ -18,7 +18,7 @@ const appointmentService = {
     this.create(appointment, callback, errHandler)
   },
   findById: function (id, callback) {
-    Vue.http.get(AppProps.apiUrl + '/appointment/' + id)
+    Vue.http.get(AppProps.getApiUrl() + '/appointment/' + id)
       .then(
         response => {
           let app = (response.body) ? response.body : null

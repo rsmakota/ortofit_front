@@ -97,7 +97,7 @@
         if (doctorId !== null && doctorId !== 'all') {
           data.doctorId = doctorId
         }
-        return {url: appProperty.staffScheduleApiUrl, data: data}
+        return {url: appProperty.getStaffScheduleApiUrl(), data: data}
       },
       getDoctorId () {
         if (this.$route.params.doctorId) {

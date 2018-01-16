@@ -117,7 +117,7 @@
         if (doctorId !== null) {
           data.doctorId = doctorId
         }
-        return {url: appProperty.scheduleApiUrl, data: data}
+        return {url: appProperty.getScheduleApiUrl(), data: data}
       },
       refreshEvents () {
         this.$refs.calendar.$emit('rebuild-sources')

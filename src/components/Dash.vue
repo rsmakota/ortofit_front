@@ -137,10 +137,10 @@
     },
     computed: {
       reminds: function () {
-        return this.notifications.reminds
+        return (this.notifications.reminds === 0) ? '' : this.notifications.reminds
       },
       orders: function () {
-        return this.notifications.orders
+        return (this.notifications.orders === 0) ? '' : this.notifications.orders
       }
     },
     mounted () {

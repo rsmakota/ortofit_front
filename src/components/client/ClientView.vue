@@ -176,7 +176,11 @@
         return this.avatarPath + 'unknown.png'
       },
       lastAppDateTime: function () {
-        return this.dateFormat(this.lastApp.dateTime)
+        if (this.lastApp) {
+          return this.dateFormat(this.lastApp.dateTime)
+        }
+        return ''
+        // return (this.lastApp.dateTime !== null) ? this.dateFormat(this.lastApp.dateTime) : ''
       }
     },
     methods: {
@@ -236,7 +240,10 @@
         return '-'
       },
       timeFormat (timestamp) {
-        return moment(timestamp).format('HH:mm')
+        if (timestamp) {
+          return moment(timestamp).format('HH:mm')
+        }
+        return ''
       },
       getReasonName (id) {
         return reasonService.getReasonById(id).name

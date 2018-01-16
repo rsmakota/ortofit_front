@@ -15,7 +15,7 @@
         <div class="col-md-12">
           <ul id="office_tabs" class="nav nav-tabs">
             <li v-for="office in offices" :class="{'active': (office.id === officeId)}">
-              <a @click="setOfficeId(office.id)" class="office_link">{{ office.name }}</a>
+              <a @click="btnOfficeClick(office.id)" class="office_link">{{ office.name }}</a>
             </li>
           </ul>
           <div class="box box-info">
@@ -124,6 +124,10 @@
           to: this.dateTo.format('YYYY-MM-DD') + ' 23:59:59',
           officeId: this.officeId
         }, (reports) => { this.reports = reports }, this.errorHandler)
+      },
+      btnOfficeClick (officeId) {
+        this.setOfficeId(officeId)
+        this.reports = []
       },
       getDoctorId () {
         if (this.$route.params.doctorId) {

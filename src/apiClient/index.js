@@ -3,7 +3,7 @@ import AppProps from '../property'
 
 const apiClient = {
   getRaw: function (uri, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + uri)
+    Vue.http.get(AppProps.getApiUrl() + uri)
       .then(
         response => {
           console.log('Response', response)
@@ -14,7 +14,7 @@ const apiClient = {
         })
   },
   get: function (uri, callback, errHandler) {
-    Vue.http.get(AppProps.apiUrl + uri)
+    Vue.http.get(AppProps.getApiUrl() + uri)
       .then(
         response => {
           callback(((response.body) ? response.body : null))
@@ -24,7 +24,7 @@ const apiClient = {
         })
   },
   post: function (uri, body, callback, errHandler) {
-    Vue.http.post(AppProps.apiUrl + uri, body)
+    Vue.http.post(AppProps.getApiUrl() + uri, body)
       .then(
         response => {
           callback(response.body)
@@ -35,7 +35,7 @@ const apiClient = {
       )
   },
   put: function (uri, body, callback, errHandler) {
-    Vue.http.put(AppProps.apiUrl + uri, body)
+    Vue.http.put(AppProps.getApiUrl() + uri, body)
       .then(
         response => {
           callback(response.body)
@@ -46,7 +46,7 @@ const apiClient = {
       )
   },
   delete: function (uri, body, callback, errHandler) {
-    Vue.http.delete(AppProps.apiUrl + uri, { body: body })
+    Vue.http.delete(AppProps.getApiUrl() + uri, { body: body })
       .then(
         response => {
           callback(response.body)
