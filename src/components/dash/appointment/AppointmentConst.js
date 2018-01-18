@@ -11,7 +11,8 @@ const APP_CONST = {
     INSOLE: 'app.flow.insole',
     MASSAGE: 'app.flow.massage',
     REWIND: 'app.flow.rewind',
-    ERROR: 'app.flow.error'
+    ERROR: 'app.flow.error',
+    LOADING: 'app.flow.loading'
   },
   APP: {
     NEW: 1,

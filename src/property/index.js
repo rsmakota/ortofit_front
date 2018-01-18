@@ -1,6 +1,6 @@
 
 const params = {
-  devUrl: 'https://backend.ortofit.com.ua', // 'http://localhost:8090'
+  devUrl: 'http://localhost:8090',
   prodUrl: 'https://backend.ortofit.com.ua',
   auth: {
     requestProps: {

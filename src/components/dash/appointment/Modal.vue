@@ -91,6 +91,8 @@
                 @finish="rewindFinish"
         ></rewind>
         <error v-if="(state === appState.FLOW.ERROR)"></error>
+        <loading v-if="(state === appState.FLOW.LOADING)"></loading>
+
       </div>
 
   </modal>
@@ -112,6 +114,7 @@
   import Insole from './Insole'
   import Rewind from './Rewind'
   import Error from './Error'
+  import Loading from './../../loading/Loading'
   import { bus } from './../../event/bus'
   import appService from './../../../service/AppointmentService'
   import clientService from './../../../service/ClientService'
@@ -227,6 +230,7 @@
         clientService.save(this.client, this.setClient, this.errorResponse)
       },
       appFormSave: function () {
+        this.state = APP_CONST.FLOW.LOADING
         appService.save(this.appointment, this.closeEventHandler, this.errorResponse)
       },
       /*********************************************************************************************
@@ -367,7 +371,8 @@
       'choose-service': ChooseService,
       'insole': Insole,
       'rewind': Rewind,
-      'error': Error
+      'error': Error,
+      'loading': Loading
     },
     computed: {
       ...mapGetters({

@@ -11,10 +11,10 @@
         </a>
 
         <ul class="treeview-menu" id="doctorList" >
-          <li v-for="(doctor, index) in doctors" :class="{'active': (activeDoctorId == doctor.id)}">
+          <li v-for="(doctor, index) in doctors" :class="{'active': ((activeDoctorId == doctor.id) && (currentRoutName === 'Schedule'))}">
             <a href="javascript:void(0);" @click="clickDoctor(doctor.id)"><i class="fa fa-user-md"></i> <span>{{ doctor.name }}</span></a>
           </li>
-          <li v-bind:class="{'active': (activeDoctorId == null)}">
+          <li v-bind:class="{'active': ((activeDoctorId == null) && (currentRoutName === 'Schedule'))}">
             <a href="javascript:void(0);"  @click="clickDoctor(null)">
             <i class="fa fa-hospital-o"></i> Все </a>
           </li>
@@ -84,6 +84,7 @@
     },
     methods: {
       clickDoctor (doctorId) {
+        console.log(this.currentRoutName)
         this.activeDoctorId = doctorId
         if (this.currentRoutName === 'Schedule') {
           bus.$emit('menu-click-doctor-event', doctorId)
