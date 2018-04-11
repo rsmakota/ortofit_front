@@ -11,6 +11,7 @@ import ActiveRemind from '../components/dash/remind/ActiveRemind'
 import Total from './../components/dash/total/Total'
 import Settlement from './../components/dash/settlement/Settlement'
 import Order from './../components/dash/order/Order'
+import Remind from './../components/dash/remind/Remind'
 import store from '../store'
 
 Vue.use(Router)
@@ -73,8 +74,16 @@ let router = new Router({
           path: '/order',
           component: Order,
           name: 'Order'
+        },
+        {
+          path: '/remind',
+          component: Remind,
+          name: 'Remind'
         }
       ]
+    },
+    {
+      path: '/secure'
     }
   ]
 })

@@ -34,11 +34,10 @@
 
             <!-- Notifications Menu -->
             <li class="dropdown notifications-menu">
-
-              <router-link :to="{name: 'Remind'}" class="dropdown-toggle">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-bell-o"></i>
                 <span class="label label-warning">{{ reminds }}</span>
-              </router-link>
+              </a>
               <ul class="dropdown-menu">
                 <li class="header">You have notification(s)</li>
 

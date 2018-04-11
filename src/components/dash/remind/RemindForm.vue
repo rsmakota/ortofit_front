@@ -11,6 +11,18 @@
         </li>
       </ul>
       <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Дата:</label>
+
+          <div class="col-sm-9">
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar icon20"></i>
+              </div>
+              <date-picker v-model="date" :config="dtConf"></date-picker>
+            </div>
+          </div>
+        </div>
 
         <div class="form-group">
           <label class="col-sm-3 control-label">Клиент:</label>
@@ -43,18 +55,7 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Дата:</label>
 
-          <div class="col-sm-9">
-            <div class="input-group">
-              <div class="input-group-addon">
-                <i class="fa fa-calendar icon20"></i>
-              </div>
-              <date-picker v-model="date" :config="dtConf"></date-picker>
-            </div>
-          </div>
-        </div>
 
 
         <div class="form-group">

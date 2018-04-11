@@ -33,6 +33,13 @@ const remindService = {
       query += '&sort=' + request.sort[i]
     }
     apiClient.get('/remind/list' + query, callback, errorHandler)
+  },
+  findActive: function (request, callback, errorHandler) {
+    let query = '/remind/active?limit=' + request.limit + '&officeId=' + request.officeId
+    apiClient.get(query, callback, errorHandler)
+  },
+  process (id, callback, errHandler) {
+    apiClient.get('/remind/process/' + id, callback, errHandler)
   }
 }
 
