@@ -24,11 +24,6 @@
                 <i class="fa fa-envelope-o"></i>
                 <span class="label label-success"></span>
               </a>
-              <ul class="dropdown-menu">
-                <li class="header">You have message(s)</li>
-
-                <li class="footer"><a href="javascript:;">See All Messages</a></li>
-              </ul>
             </li>
             <!-- /.messages-menu -->
 
@@ -39,11 +34,6 @@
                 <i class="fa fa-bell-o"></i>
                 <span class="label label-warning">{{ reminds }}</span>
               </router-link>
-              <ul class="dropdown-menu">
-                <li class="header">You have notification(s)</li>
-
-                <li class="footer"><a href="javascript:;">View all</a></li>
-              </ul>
             </li>
 
             <!-- Tasks Menu -->
@@ -52,11 +42,17 @@
                 <i class="fa fa-internet-explorer"></i>
                 <span class="label label-danger">{{ orders }}</span>
                 </router-link>
+            </li>
+            <li>
+              <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+            </li>
 
-              <ul class="dropdown-menu">
-                <li class="header">You have  task(s)</li>
+            <li>
+              &nbsp;&nbsp;&nbsp;
+            </li>
 
-              </ul>
+            <li>
+              <a href="#" @click="logout"><i class="fa fa-sign-out"></i></a>
             </li>
 
           </ul>
@@ -67,7 +63,7 @@
     <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
       <div class="user-panel">
-        <button class="btn btn-block btn-success" id="appButton" v-on:click="appointmentModalShow">
+        <button class="btn btn-block btn-success" @click="appointmentModalShow">
           <i class="fa fa-fw fa-calendar-plus-o"></i> <span>Запись</span>
         </button>
       </div>
@@ -86,7 +82,7 @@
 
     <!-- Main Footer -->
     <footer class="main-footer">
-      <strong>Copyright &copy; <a href="javascript:;">Ortofit</a>.</strong> All rights reserved.
+      <strong>Copyright &copy; <a href="http://ortofit.com.ua">Ortofit</a>.</strong> All rights reserved.
     </footer>
 
     <appointment-modal></appointment-modal>
@@ -127,6 +123,10 @@
         this.interval = setInterval(function () {
           this.loadNotifications()
         }.bind(this), 100000)
+      },
+      logout () {
+        this.$store.commit('logout')
+        this.$router.push({name: 'Login'})
       }
     },
     components: {
