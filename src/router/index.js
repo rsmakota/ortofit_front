@@ -11,6 +11,7 @@ import ActiveRemind from '../components/dash/remind/ActiveRemind'
 import Total from './../components/dash/total/Total'
 import Settlement from './../components/dash/settlement/Settlement'
 import Order from './../components/dash/order/Order'
+import UserInfo from './../components/user/UserInfo'
 import Remind from './../components/dash/remind/Remind'
 import store from '../store'
 
@@ -79,6 +80,11 @@ let router = new Router({
           path: '/remind',
           component: Remind,
           name: 'Remind'
+        },
+        {
+          path: 'user',
+          component: UserInfo,
+          name: 'UserInfo'
         }
       ]
     },

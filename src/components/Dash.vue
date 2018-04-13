@@ -44,7 +44,7 @@
                 </router-link>
             </li>
             <li>
-              <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+              <router-link :to="{ name: 'UserInfo'}" class="dropdown-toggle"><i class="fa fa-gears"></i></router-link>
             </li>
 
             <li>
