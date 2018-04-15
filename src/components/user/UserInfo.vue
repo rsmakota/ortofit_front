@@ -18,6 +18,7 @@
               <img class="profile-user-img img-responsive img-circle" alt="User profile picture" :src="userAvatar">
               <h3 class="profile-username text-center"><strong>Имя:</strong> {{ user.name }}</h3>
               <p class="text-muted text-center"><strong>Логин:</strong> {{ user.username }}</p>
+              <p class="text-muted text-center"><strong>Email:</strong> {{ user.email }}</p>
               <p class="text-muted text-center"><strong>Группы:</strong> <span v-for="group in groups">{{group.name}} </span></p>
               <ul class="list-group list-group-unbordered">
 

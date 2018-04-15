@@ -6,6 +6,12 @@ const userService = {
   },
   getCurrentGroups (callback, errHandler) {
     apiClient.get('/user/group', callback, errHandler)
+  },
+  changePassword (request, callback, errHandler) {
+    apiClient.put('/user/change_password', request, callback, errHandler)
+  },
+  changeEmail (request, callback, errHandler) {
+    apiClient.put('/user/change_email', request, callback, errHandler)
   }
 }
 
