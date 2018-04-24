@@ -34,11 +34,14 @@
         </div>
       </div>
     </section>
+    <user-modal></user-modal>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
+  import UserModal from './Modal'
+  import USER_CONST from './UserConst'
 
   export default {
     data () {
@@ -51,10 +54,10 @@
         console.log(err)
       },
       changeEmail () {
-        //
+        this.$modal.show('user-modal', {title: 'Изменить Emil', mod: USER_CONST.ACTION.CHANGE_EMAIL, user: this.user})
       },
       changePassword () {
-        //
+        this.$modal.show('user-modal', {title: 'Смена пароля', mod: USER_CONST.ACTION.CHANGE_PASSWORD, user: this.user})
       }
     },
     computed: {
@@ -65,6 +68,9 @@
       userAvatar () {
         return this.avatarPath + 'user.png'
       }
+    },
+    components: {
+      'user-modal': UserModal
     }
   }
 </script>
