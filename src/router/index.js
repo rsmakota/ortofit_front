@@ -13,6 +13,7 @@ import Settlement from './../components/dash/settlement/Settlement'
 import Order from './../components/dash/order/Order'
 import UserInfo from './../components/user/UserInfo'
 import Remind from './../components/dash/remind/Remind'
+import Secure from '../components/dash/secure/Secure'
 import store from '../store'
 
 Vue.use(Router)
@@ -85,11 +86,13 @@ let router = new Router({
           path: 'user',
           component: UserInfo,
           name: 'UserInfo'
+        },
+        {
+          path: '/secure',
+          name: 'Secure',
+          component: Secure
         }
       ]
-    },
-    {
-      path: '/secure'
     }
   ]
 })

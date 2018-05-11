@@ -12,6 +12,12 @@ const userService = {
   },
   changeEmail (request, callback, errHandler) {
     apiClient.put('/user/change_email', request, callback, errHandler)
+  },
+  getAll (callback, errHandler) {
+    apiClient.get('/user/all', callback, errHandler)
+  },
+  del (userId, callback, errHandler) {
+    apiClient.delete('/user/', userId, callback, errHandler)
   }
 }
 
